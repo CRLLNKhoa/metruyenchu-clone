@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.tab{
+    @apply after:rounded-full hover:text-[#B78A28] after:absolute relative 
+}
+
+.tab-active{
+    @apply after:rounded-full hover:text-[#B78A28] text-[#B78A28] after:w-[100%] after:bottom-[-11px] after:left-0 after:h-1 after:bg-[#B78A28] after:absolute relative
+}
+
+.tab-account-index{
+    @apply bg-[#B78A28] rounded-sm text-white text-[14px] select-none
+}
+
+.tab-account{
+    @apply rounded-sm hover:text-[#B78A28] text-[14px] select-none
+}

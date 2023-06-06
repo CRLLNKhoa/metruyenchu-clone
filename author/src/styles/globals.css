@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.sidebar-item{
+  @apply flex items-center gap-2 hover:pl-6 dark:text-[white] transition-all px-2 py-2 rounded-md text-[14px] text-[#95979b]
+}
+
+.sidebar-item-active{
+  @apply bg-gradient-to-l from-sky-500 to-indigo-500 text-[white]
+}
+
+.title-input{
+  @apply text-[12px] mb-1 text-[#6A707E]
+}
+
+.input{
+  @apply bg-transparent text-[14px] focus:border-[#7367F0] outline-none border-[#6A707E] border transition-all w-full rounded-[6px] px-4 py-2  focus:pl-6
+}

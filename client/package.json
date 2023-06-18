@@ -40,5 +40,5 @@
   "devDependencies": {
     "daisyui": "^3.0.20"
   },
-  "proxy": "https://backend-tikishop.onrender.com"
+  "proxy": "https://metruyenchu-backend.onrender.com"
 }

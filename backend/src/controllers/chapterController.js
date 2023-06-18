@@ -92,6 +92,43 @@ const updateChapter = async (req, res) => {
 
 const getChapter = async (req, res) => {
   try {
+    const storyId = req.params.id;
+    const {chapter} = req.query;
+    if (!storyId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Tập truyện không tồn tại!",
+      });
+    }
+    const response = await ChapterService.getChapter(storyId,chapter);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const getChapterEdit = async (req, res) => {
+  try {
+    const storyId = req.params.id;
+    if (!storyId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Tập truyện không tồn tại!",
+      });
+    }
+    const response = await ChapterService.getChapterEdit(storyId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const view = async (req, res) => {
+  try {
     const chapterId = req.params.id;
     if (!chapterId) {
       return res.status(200).json({
@@ -99,7 +136,7 @@ const getChapter = async (req, res) => {
         message: "Tập truyện không tồn tại!",
       });
     }
-    const response = await ChapterService.getChapter(chapterId);
+    const response = await ChapterService.view(chapterId);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -114,5 +151,5 @@ module.exports = {
   getAllByStory,
   deleteChapter,
   updateChapter,
-  getChapter
+  getChapter,getChapterEdit,view
 };

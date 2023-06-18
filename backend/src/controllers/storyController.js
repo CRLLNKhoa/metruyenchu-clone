@@ -43,6 +43,21 @@ const getAll = async (req, res) => {
   }
 };
 
+const getStorySortRating = async (req, res) => {
+  try {
+    const { limit, page} = req.query;
+    const response = await StoryService.getStorySortRating(
+      Number(limit) || 8,
+      Number(page) || 0,
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 const getAllAuthor = async (req, res) => {
   try {
     const { limit, page, sort } = req.query;
@@ -122,5 +137,5 @@ module.exports = {
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,
+  getAllAuthor,getStorySortRating
 };

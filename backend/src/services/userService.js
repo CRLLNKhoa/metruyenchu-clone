@@ -282,7 +282,7 @@ const getReadingStory = (id, data) => {
     try {
       const checkUser = await User.findOne({
         _id: id,
-      }).populate("seenStory", "title thumbnaill chapter");
+      }).populate("seenStory", "title thumbnail chapter");
       if (checkUser === null) {
         resolve({
           status: "OK",

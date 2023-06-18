@@ -52,7 +52,7 @@ const createStory = (newStory) => {
   });
 };
 
-const   getall = (limit = 10, page = 0, sort) => {
+const getall = (limit = 10, page = 0, sort) => {
   return new Promise(async (resolve, reject) => {
     try {
       const totalUser = await Story.count();
@@ -76,7 +76,7 @@ const   getall = (limit = 10, page = 0, sort) => {
       const allUser = await Story.find()
         .limit(limit)
         .skip(page * limit)
-        .sort({ title: "asc" }).populate('userId',"displayName");
+        .sort({ createdAt: "desc" }).populate('userId',"displayName");
       resolve({
         status: "OK",
         message: "Lấy danh sách truyện thành công!",
@@ -84,6 +84,45 @@ const   getall = (limit = 10, page = 0, sort) => {
         totalStory: totalUser,
         pageCurrent: Number(page + 1),
         totalPage: Math.ceil(totalUser / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getStorySortRating = (limit = 8, page = 0) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const total = await Story.count();
+      const all = await Story.find().populate("userId", "displayName").populate('rating',"worldScene content character").select("title thumbnail genre description");
+      const arr = []
+      const forEachLoop = _ => {
+        all.forEach(item => {
+            item.rating.forEach(itemRating=>{
+              const avg = Math.round((itemRating.worldScene + itemRating.character + itemRating.content)/3*100)/100
+              arr.push({
+                _id: item._id,
+                title: item.title,
+                author: item.userId.displayName,
+                desc: item.description,
+                genre: item.genre,
+                rating: avg,
+                quantityRating: item.rating.length,
+                thumbnail: item.thumbnail
+              })
+            })
+        })
+      }
+      forEachLoop()
+      const sort = arr.sort((a,b)=> b.rating - a.rating)
+      resolve({
+        status: "OK",
+        message: "Lấy danh sách truyện thành công!",
+        data: sort.slice(0,limit),
+        totalStory: total,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(total / limit),
       });
     } catch (e) {
       reject(e);
@@ -113,7 +152,9 @@ const getAllAuthor = (limit = 100, page = 0, sort, id) => {
           totalPage: Math.ceil(totalUser / limit),
         });
       }
-      const allUser = await Story.find()
+      const allUser = await Story.find({
+        userId: id,
+      })
         .limit(limit)
         .skip(page * limit)
         .sort({ title: "asc" });
@@ -136,7 +177,7 @@ const getDetail = (id) => {
     try {
       const story = await Story.findOne({
         _id: id,
-      }).populate("chapter","title _id createdAt").populate("userId","avatar displayName storyWritten");
+      }).populate("chapter","title _id createdAt chapterNo view").populate("userId","avatar displayName storyWritten").populate("rating","content character worldScene");
       if (story === null) {
         resolve({
           status: "OK",
@@ -210,5 +251,5 @@ module.exports = {
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,
+  getAllAuthor,getStorySortRating
 };

@@ -56,6 +56,25 @@ const getComment = async (req,res) =>{
   }
 }
 
+const getCommentPageChapter = async (req,res) =>{
+  try {
+    const  storyId = req.params.id;
+    const {limit,no} = req.query
+    if (!storyId) {
+      return res.status(200).json({
+        status: "ERR",
+        massage: "Vui lòng nhập đủ thông tin yêu cầu!",
+      });
+    }
+    const response = await CommentService.getCommentPageChapter(storyId,limit,no);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(404).json({
+      message: error,
+    });
+  }
+}
+
 const like = async (req,res) =>{
   try {
     const  id = req.params.id;
@@ -99,5 +118,6 @@ module.exports = {
     getComment,
     like,
     unlike,
-    replayComment
+    replayComment,
+    getCommentPageChapter
   };

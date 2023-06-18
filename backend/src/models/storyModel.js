@@ -34,6 +34,7 @@ const storySchema = new mongoose.Schema(
       required: true,
     },
     author: {type: String},
+    rating: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rate" }],
     comments: [
       {
         type: mongoose.Schema.Types.ObjectId,

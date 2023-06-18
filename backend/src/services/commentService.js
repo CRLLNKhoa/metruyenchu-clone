@@ -69,6 +69,32 @@ const getComment = (storyId, limit = 6) => {
   });
 };
 
+const getCommentPageChapter = (storyId, limit = 6 , no = 1) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const cmts = await Comment.find({
+        storyId: storyId,
+        chapterNo: no
+      })
+        .populate("userId", "displayName avatar").populate("replay.userId","displayName avatar")
+        .sort({ createdAt: "desc" }).sort({"replay.updatedAt": "desc"})
+        .limit(limit);
+      const total = await Comment.find({
+        storyId: storyId,
+        chapterNo: no
+      }).count();
+      resolve({
+        status: "OK",
+        message: "Lấy bình luận thành công!",
+        data: cmts,
+        total: total,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const like = (id, userId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -113,4 +139,5 @@ module.exports = {
   like,
   unlike,
   replayComment,
+  getCommentPageChapter
 };

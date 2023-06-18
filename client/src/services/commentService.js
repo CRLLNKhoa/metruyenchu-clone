@@ -5,6 +5,11 @@ export const getCommentStory = async (id,limit) => {
     return res.data
 }
 
+export const getCommentStoryPageChapter = async (id,limit,no) => {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/comment/get-of-chapter/${id}?limit=${limit}&no=${no}`)
+    return res.data
+}
+
 export const addComment = async (data) => {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/comment/create`,data)
     return res.data

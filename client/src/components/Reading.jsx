@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as StoryService from "services/storyService"
 import { useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
+import { useRouter } from "next/router";
 
 export default function Reading() {
   const fetchStory = async () => {
@@ -31,18 +32,28 @@ export default function Reading() {
   
     return false;
   });
+
+  const router = useRouter()
+  const goto = () => {
+      router.push({
+        pathname: "tai-khoan",
+        query: {
+          tab: 2
+        }
+      })
+  }
   
 
   return (
     <div className="border-b pb-8 group">
       <div className="flex w-full justify-between ">
         <h1 className="font-bold text-[18px] mb-4">Đang đọc</h1>
-        <Link
-          href="/"
-          className="text-[13px] text-[#b78a28] transition-all duration-300 hidden group-hover:flex"
+        <p
+          onClick={goto}
+          className="cursor-pointer text-[13px] text-[#b78a28] transition-all duration-300 hidden group-hover:flex"
         >
           Xem tất cả
-        </Link>
+        </p>
       </div>
       <div className="flex flex-col gap-6">
         {unique?.map(item=><CardStoreReading key={item._id} thumbnail={item.thumbnail} title={item.title}/>)}

@@ -59,11 +59,10 @@ export default function CommentCard({
   const [isShow, setShow] = useState(false);
   const [isShowReplay, setIsShowReplay] = useState(3);
   return (
-    <div className="flex gap-4 items-start border-b pb-2">
+    <div className="flex gap-4 items-start pb-2">
       <div className="relative w-[42px]">
         <img
-          width={42}
-          className="rounded-full"
+          className="rounded-full w-[42px] h-[42px]"
           src={avatar}
           alt="..."
         />
@@ -95,7 +94,7 @@ export default function CommentCard({
           <span
             onClick={() => handleLike(idCmt, auth.id)}
             className={`${
-              like.includes(auth.id) && "text-black"
+              like.includes(auth.id) && (auth.theme === 6 ? "text-red-600" : "text-black")
             } flex items-center gap-2 cursor-pointer`}
           >
             <AiFillLike /> {like.length}
@@ -124,6 +123,7 @@ export default function CommentCard({
                     setReplay({ ...replay, cmt: e.target.value })
                   }
                   className="w-full h-full ab outline-none p-2 text-[14px] pr-10"
+                  placeholder="Trả lời..."
                 ></textarea>
                 <button
                   onClick={() => {
@@ -146,13 +146,13 @@ export default function CommentCard({
               key={item._id}
                 className={`${
                   index < replaydata.length - isShowReplay && "hidden"
-                } flex gap-4 border-b pb-4`}
+                } flex gap-4 pb-4`}
               >
                 <div className="w-10 h-10 rounded-full relative">
                   <img
                     src={item.userId.avatar}
                     alt="..."
-                    className="rounded-full"
+                    className="rounded-full w-[42px] h-[42px]"
                   />
                   <span className="absolute bottom-[-6px] bg-[#B78A28] rounded-full text-white text-[10px] left-0 right-0 flex justify-center">
                     Cấp 0

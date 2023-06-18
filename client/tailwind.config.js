@@ -14,6 +14,10 @@ module.exports = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily: {
+        'dancing': ['Dancing Script', "cursive"],
+        'ubuntu': ['Ubuntu', 'sans-serif']
+      },
     },
     screens: {
       'sm': '640px',
@@ -34,5 +38,7 @@ module.exports = {
   },
   plugins: [
     require('@kamona/tailwindcss-perspective'),
+    require("daisyui"),
+    require('tailwind-scrollbar'),
   ],
 };

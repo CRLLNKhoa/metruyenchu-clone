@@ -12,7 +12,7 @@ import { FaBars } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { RiMedalFill } from "react-icons/ri";
-import { BsArrowUpCircle ,BsFillBellFill} from "react-icons/bs";
+import { BsArrowUpCircle, BsFillBellFill } from "react-icons/bs";
 import { AiOutlineMail } from "react-icons/ai";
 import { TbPassword } from "react-icons/tb";
 import { ImSearch } from "react-icons/im";
@@ -20,12 +20,13 @@ import { useDispatch, useSelector } from "react-redux";
 import * as AuthService from "services/authService";
 import { resetAuth, updateAuth } from "redux/slice/authSlice";
 import jwt_decode from "jwt-decode";
-import { isJsonString } from "../../untils";
+import { isJsonString, themeColor } from "../../untils";
 import { FaUserCircle } from "react-icons/fa";
 import { TbCandy } from "react-icons/tb";
 import { IoMdFlower } from "react-icons/io";
 import { useMutationHooks } from "hooks/useMutationHook";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
   const router = useRouter();
@@ -35,7 +36,6 @@ export default function Header() {
     cfPassword: "",
   });
 
-
   // NOTE Login
   const [visible, setVisible] = useState(false);
   const handler = () => setVisible(true);
@@ -44,26 +44,32 @@ export default function Header() {
     setVisible(false);
   };
 
-  const mutationLogin = useMutationHooks((data)=> AuthService.loginUser(data))
-  const {data: dataLogin} =mutationLogin
-  const handleLogin =()=>{
-    mutationLogin.mutate({email: inputData.email,password: inputData.password})
-  }
+  const mutationLogin = useMutationHooks((data) => AuthService.loginUser(data));
+  const { data: dataLogin } = mutationLogin;
+  const handleLogin = () => {
+    mutationLogin.mutate({
+      email: inputData.email,
+      password: inputData.password,
+    });
+  };
 
   useEffect(() => {
-    if(dataLogin?.status==="OK"){
-      toast.success("Đăng nhập thành công!")
-      localStorage.setItem("access_token",JSON.stringify(dataLogin?.access_token))
-      if(dataLogin?.access_token){
-        const decoded = jwt_decode(dataLogin?.access_token)
-        if(decoded?.id){
-          handleGetDetailUser(decoded?.id,dataLogin?.access_token)
+    if (dataLogin?.status === "OK") {
+      toast.success("Đăng nhập thành công!");
+      localStorage.setItem(
+        "access_token",
+        JSON.stringify(dataLogin?.access_token)
+      );
+      if (dataLogin?.access_token) {
+        const decoded = jwt_decode(dataLogin?.access_token);
+        if (decoded?.id) {
+          handleGetDetailUser(decoded?.id, dataLogin?.access_token);
         }
       }
-      closeHandler()
+      closeHandler();
     }
-    if(dataLogin?.status==="ERR"){
-      toast.error(dataLogin.message)
+    if (dataLogin?.status === "ERR") {
+      toast.error(dataLogin.message);
     }
   }, [dataLogin]);
 
@@ -76,23 +82,27 @@ export default function Header() {
     setVisibleR(false);
   };
 
-  const mutationSignUp = useMutationHooks((data)=> AuthService.signUpUser(data))
-  const {data: dataSignUp} =mutationSignUp
-  const handleSignUp =()=>{
-    mutationSignUp.mutate({email: inputData.email,password: inputData.password})
-  }
+  const mutationSignUp = useMutationHooks((data) =>
+    AuthService.signUpUser(data)
+  );
+  const { data: dataSignUp } = mutationSignUp;
+  const handleSignUp = () => {
+    mutationSignUp.mutate({
+      email: inputData.email,
+      password: inputData.password,
+    });
+  };
 
   useEffect(() => {
-    if(dataSignUp?.status==="OK"){
-      toast.success("Đăng ký thành công!")
-      closeHandlerR()
-      handlerR()
+    if (dataSignUp?.status === "OK") {
+      toast.success("Đăng ký thành công!");
+      closeHandlerR();
+      handlerR();
     }
-    if(dataSignUp?.status==="ERR"){
-      toast.error(dataSignUp.message)
+    if (dataSignUp?.status === "ERR") {
+      toast.error(dataSignUp.message);
     }
   }, [dataSignUp]);
-
 
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -148,9 +158,50 @@ export default function Header() {
     push("/");
   };
 
+  // NOTE Notic
+
+  const fetch = async () => {
+    const res = await AuthService.getNotic(auth?.id, 3);
+    return res;
+  };
+
+  const query = useQuery({
+    queryKey: ['noticfecth', auth?.id],
+    queryFn: fetch,
+    // The query will not execute until the userId exists
+    enabled: !!auth?.id,
+  });
+
+  const { data, isLoading: isLoadingNotic } = query;
+
+  const goToNotic = (tab) => {
+    router.push({
+      pathname: "/tai-khoan",
+      query: {
+        tab: tab,
+      },
+    });
+  };
+
   return (
-    <section className="w-full bg-[#F5F4F2] flex justify-center">
-      <header className="h-[62px] w-[1200px] bg-[#F5F4F2] flex justify-between items-center px-12">
+    <section
+      className={`w-full ${
+        router.pathname.slice(0, 7) === "/chuong"
+          ? `bg-[${themeColor[auth.theme].body}] ${
+              auth.theme === 6 && "text-white"
+            }`
+          : "bg-[#F5F4F2] text-black"
+      }  flex justify-center`}
+    >
+      <header
+        className={`h-[62px] w-[1200px] ${
+          router.pathname.slice(0, 7) === "/chuong"
+            ? `bg-[${themeColor[auth.theme].body}] ${
+                auth.theme === 6 && "text-white"
+              } `
+            : "bg-[#F5F4F2]"
+        }  flex justify-between items-center px-12`}
+      >
         {/* NOTE Modal Login */}
         <Modal
           closeButton
@@ -232,7 +283,9 @@ export default function Header() {
               size="lg"
               placeholder="Email"
               contentLeft={<AiOutlineMail fill="currentColor" />}
-              onChange={(e)=>setInputData({...inputData,email: e.target.value})}
+              onChange={(e) =>
+                setInputData({ ...inputData, email: e.target.value })
+              }
             />
             <Input
               clearable
@@ -243,7 +296,9 @@ export default function Header() {
               type="password"
               placeholder="Password"
               contentLeft={<TbPassword fill="currentColor" />}
-              onChange={(e)=>setInputData({...inputData,password: e.target.value})}
+              onChange={(e) =>
+                setInputData({ ...inputData, password: e.target.value })
+              }
             />
             <Input
               clearable
@@ -280,7 +335,7 @@ export default function Header() {
           </Link>
           <Popover trigger="hover" placement="bottom-left">
             <Popover.Trigger>
-              <p className="text-black flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
+              <p className="flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
                 <FaBars />
                 Thể loại
               </p>
@@ -423,7 +478,7 @@ export default function Header() {
           </Popover>
           <Popover trigger="hover" placement="bottom-left">
             <Popover.Trigger>
-              <p className="text-black flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
+              <p className=" flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
                 <RiMedalFill />
                 Bảng xếp hạng
               </p>
@@ -466,37 +521,79 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-14 text-[14px]">
-          <a
-            className="flex items-center text-black gap-2 hover:text-[#835443]"
-            href="/"
-          >
+          <a className="flex items-center gap-2 hover:text-[#835443]" href="/">
             <BsArrowUpCircle />
             Đăng truyện
           </a>
           {auth?.id ? (
             <>
-                      <Popover trigger="hover" placement="bottom-right">
-                <Popover.Trigger>
-                  <p className="text-black font-semibold flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
-                    <BsFillBellFill size={24} />
-                  </p>
-                </Popover.Trigger>
-                <Popover.Content></Popover.Content>
-              </Popover>
+              <div className="dropdown dropdown-bottom dropdown-end flex items-center cursor-pointer p-2 z-50">
+                <label className="cursor-pointer relative" tabIndex={0}>
+                  <BsFillBellFill size={20} />
+                  <div className="badge bg-red-500 text-white badge-xs absolute -top-[5px] right-[-5px] py-1 px-1 text-[8px]">
+                    {(data?.count > 9 ? "+9" : data?.count) || 0}
+                  </div>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-[400px]"
+                >
+                  {data?.data?.map((item) => (
+                    <li>
+                      <Link href={item.link}>
+                        <img
+                          className="w-[42px] h-[42px] rounded-full"
+                          src={item.thumbnail}
+                          alt="..."
+                        />
+                        <div className="flex flex-col">
+                          <b className="text-[13px]">{item.title}</b>
+                          <i className="text-[10px]">{item.desc}</i>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+
+                  {data?.data?.length === 0 ? (
+                    <li className="flex">
+                      <i className="w-full flex justify-center items-center">
+                        Chưa có thông báo mới!
+                      </i>
+                    </li>
+                  ) : (
+                    <p
+                      className="w-full flex items-center justify-center py-2 italic hover:text-sky-600"
+                      onClick={() => goToNotic(8)}
+                    >
+                      Xem thêm
+                    </p>
+                  )}
+                </ul>
+              </div>
               <Popover trigger="hover" placement="bottom-right">
                 <Popover.Trigger>
-                  <div className="text-black relative font-semibold flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
-                    <img src={auth?.avatar} alt="..." className="w-[32px] h-[32px] rounded-full" />
+                  <div className=" relative font-semibold flex  items-center gap-2 cursor-pointer hover:text-[#835443]">
+                    <img
+                      src={auth?.avatar}
+                      alt="..."
+                      className="w-[32px] h-[32px] rounded-full"
+                    />
                     <p>{auth?.displayName}</p>
-                    <p className="absolute right-[-10px] top-[0px] text-[8px]">{auth?.vip.status && <b className=" text-red-600">Vip</b>}</p>
+                    <p className="absolute right-[-10px] top-[0px] text-[8px]">
+                      {auth?.vip.status && <b className=" text-red-600">Vip</b>}
+                    </p>
                   </div>
                 </Popover.Trigger>
                 <Popover.Content>
                   <div className="p-6 w-[200px] flex justify-between flex-wrap gap-4">
                     <div className="text-black flex gap-2 items-center">
-                      <img src={auth?.avatar} alt="..." className="w-[32px] h-[32px] rounded-full" />
+                      <img
+                        src={auth?.avatar}
+                        alt="..."
+                        className="w-[32px] h-[32px] rounded-full"
+                      />
                       <div className="flex flex-col">
-                        <span className="text-[12px]">{auth?.name}</span>
+                        <span className="text-[12px]">{auth?.displayName}</span>
                         <div className="flex items-center text-[12px] gap-2 ">
                           <span className="flex items-center gap-2">
                             <TbCandy />
@@ -509,10 +606,58 @@ export default function Header() {
                         </div>
                       </div>
                     </div>
-                    <Link href="/tai-khoan" className="w-full text-black cursor-pointer hover:text-[#835443]">
+                    <span
+                      onClick={() => goToNotic(1)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
                       Hồ sơ
-                    </Link>
-                    <p onClick={handleLogout} className="w-full text-black cursor-pointer hover:text-[#835443]">
+                    </span>
+                    <span
+                      onClick={() => goToNotic(2)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Tủ truyện
+                    </span>
+                    <span
+                      onClick={() => goToNotic(4)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Tài sản
+                    </span>
+                    <span
+                      onClick={() => goToNotic(5)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Mua kẹo
+                    </span>
+                    <span
+                      onClick={() => goToNotic(6)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Nâng cấp
+                    </span>
+                    <span
+                      onClick={() => goToNotic(7)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Nhận thưởng
+                    </span>
+                    <span
+                      onClick={() => goToNotic(8)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Thông báo
+                    </span>
+                    <span
+                      onClick={() => goToNotic(9)}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
+                      Trợ giúp & báo lỗi
+                    </span>
+                    <p
+                      onClick={handleLogout}
+                      className="w-full text-black cursor-pointer hover:text-[#835443]"
+                    >
                       Đăng xuất
                     </p>
                   </div>

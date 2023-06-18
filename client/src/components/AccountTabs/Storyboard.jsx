@@ -53,7 +53,7 @@ export default function Storyboard({ userId }) {
         </span>
       </div>
       {tab === 1 && (
-        <div className="flex flex-col py-6">
+        <div className="flex flex-col gap-4 py-6">
           {isLoading && (
             <div className="text-[#987221] h-[200px] items-center justify-center flex">
               <Loading color="currentColor" />
@@ -85,6 +85,7 @@ export default function Storyboard({ userId }) {
               title={item.title}
               id={item._id}
               type
+              refetchF={refetchF}
             />
           ))}
         </div>
@@ -99,27 +100,29 @@ const Item = ({
   chapter = 0,
   id = 0,
   type,
+  refetchF,
 }) => {
   const auth = useSelector((state) => state.auth);
   // NOTE UNFAVORITE
-  const mutationUF = useMutationHooks((data) => AuthSerice.unfavorite(data));
-  const { isLoading: isLoadingUF, data: dataUF } = mutationUF;
+  const handleDelete = async () => {
+    const q = await AuthSerice.unfavorite(auth?.id, { favoriteStories: id });
+    await refetchF();
+  };
+
   return (
-    <div
-      className="flex gap-4 items-center cursor-pointer group"
-    >
+    <div className="flex gap-4 items-center cursor-pointer group">
       <img className="w-[48px] h-[62px]" src={img} alt=".." />
       <div className="flex flex-col flex-1">
-        <Link href={`/truyen/${id}`} className="text-[14px] font-bold group-hover:text-[#987221]">
+        <Link
+          href={`/truyen/${id}`}
+          className="text-[14px] font-bold group-hover:text-[#987221]"
+        >
           {title}
         </Link>
         <span className="text-[12px]">Đã đọc: 0 / {chapter}</span>
       </div>
       {type && (
-        <span
-          onClick={() => mutationUF.mutate({id: auth.id,data: {favoriteStories: id}})}
-          className="hover:text-red-500"
-        >
+        <span onClick={handleDelete} className="hover:text-red-500">
           <MdDelete />
         </span>
       )}

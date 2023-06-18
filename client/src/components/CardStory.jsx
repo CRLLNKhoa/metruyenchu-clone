@@ -2,7 +2,12 @@ import Link from "next/link";
 import React from "react";
 import { FaUserEdit } from "react-icons/fa";
 
-export default function CardStory({type="default",img,title,rate=0,desc="",author="",genre="",id}) {
+export default function CardStory({type="default",img,title,rate=0,desc="",author="",genre="",id,num}) {
+  const f = (num) => {
+    if(Number.isInteger(num)){
+      return `${num}.00`
+    }else return num
+  }
   return (
     <div className={type==="default"?"flex items-center h-[110px]":"flex h-[120px]"}>
       <Link className="min-w-[72px] h-[97px]" href={`/truyen/${id}`}>
@@ -21,9 +26,9 @@ export default function CardStory({type="default",img,title,rate=0,desc="",autho
         </Link>
         {type==="rate" && <div className="flex gap-4 items-center">
           <span className="bg-red-600 px-2 rounded-full text-white text-[13px]">
-            {rate}
+            {f(rate)}
           </span>
-          <p className="text-[13px] text-green-600">10 đánh giá</p>
+          <p className="text-[13px] text-green-600">{num} đánh giá</p>
         </div>}
         <p className="whitespace-pre-wrap text-[13px]">
           {desc.slice(0,60)}...

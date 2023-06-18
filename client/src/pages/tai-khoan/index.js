@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {HiOutlineUserCircle} from "react-icons/hi"
 import {BiBook,BiHelpCircle} from  "react-icons/bi"
 import {AiOutlineSetting,AiOutlineGift,AiOutlineBell} from "react-icons/ai"
@@ -15,10 +15,21 @@ import UpVipTab from 'components/AccountTabs/UpVipTab'
 import MissionTab from 'components/AccountTabs/MissionTab'
 import NoticationTab from 'components/AccountTabs/NoticationTab'
 import HelpTab from 'components/AccountTabs/HelpTab'
+import { useRouter } from 'next/router'
 
 export default function Account() {
-    const [tab,setTab] =  useState(1)
+    const router = useRouter()
+    const [tab,setTab] =  useState(Number(router.query.tab) || 1)
     const auth = useSelector((state)=>state.auth)
+
+    useEffect(() => {
+      setTab(Number(router.query.tab))
+      if(router.query === {}){
+        setTab(1)
+      }
+    }, [router]);
+
+
   return (
     <div className='bg-white w-[1200px] px-12 pb-12'>
       <Head>

@@ -20,7 +20,7 @@ const initialState = {
   candy: {
     quantity: 0,
   },
-  vip: {}
+  vip: {},theme: 6
 };
 
 export const authSlice = createSlice({
@@ -85,10 +85,13 @@ export const authSlice = createSlice({
       state.birthyear = "";
       state.role = 0;
     },
+    updateTheme: (state,action) => {
+      state.theme = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { updateAuth, resetAuth ,payment,upVip} = authSlice.actions;
+export const { updateAuth, resetAuth ,payment,upVip,updateTheme} = authSlice.actions;
 
 export default authSlice.reducer;

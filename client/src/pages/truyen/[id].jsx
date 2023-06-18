@@ -21,9 +21,12 @@ import * as CommentService from "services/commentService";
 import { useMutationHooks } from "hooks/useMutationHook";
 import Head from "next/head";
 import Fantab from "components/StoryDetail/Fantab";
-import {GiRead} from "react-icons/gi"
-import * as AuthService from "services/authService"
+import { GiRead } from "react-icons/gi";
+import * as AuthService from "services/authService";
 import Skeleton from "react-loading-skeleton";
+import RateTab from "components/StoryDetail/RateTab";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps(context) {
   const id = context.query.id;
@@ -54,12 +57,18 @@ export default function Story({ id }) {
   // Get Story
   const [limit, setLimit] = useState(8);
   const query = useQuery({ queryKey: ["storyDT"], queryFn: fetchStory });
-  const { isLoading, data,refetch: refetchStory } = query;
+  const { isLoading, data, refetch: refetchStory } = query;
   const fetchCmts = async (context) => {
     const limit = context?.queryKey && context.queryKey[1];
     const res = await CommentService.getCommentStory(id, limit);
     return res.data;
   };
+
+  console.log(data)
+
+  const totalRating = Math.round(data?.rating?.reduce(
+    (acc,cur) => (acc + (cur.content + cur.character + cur.worldScene)/data?.rating?.length) ,0
+  )/data?.rating?.length*100)/100
 
   // Get Comments
   const queryCmts = useQuery(["cmtsStory", limit], fetchCmts, {
@@ -72,7 +81,7 @@ export default function Story({ id }) {
     data: dataCmt,
     refetch,
     isPreviousData,
-    isFetching
+    isFetching,
   } = queryCmts;
   const chapterLength = data?.chapter?.length;
   // Comments
@@ -85,8 +94,13 @@ export default function Story({ id }) {
   });
 
   const send = () => {
+    if(auth.id === ""){
+      toast.warning("Bạn chưa đăng nhập!")
+    }
+   else{
     mutation.mutate({ ...comment, userId: auth.id });
     setComment({ ...comment, cmt: "" });
+   }
   };
 
   useEffect(() => {
@@ -96,14 +110,43 @@ export default function Story({ id }) {
   }, [statusCmt]);
 
   const handleFavorite = async (type) => {
-    if(type==="favorite"){
-     const q = await AuthService.favorite(auth?.id,{favoriteStories: data?._id})
-      await refetchStory()
+    if (type === "favorite") {
+      const q = await AuthService.favorite(auth?.id, {
+        favoriteStories: data?._id,
+      });
+      await refetchStory();
     }
-    if(type==="unfavorite"){
-      const q = await AuthService.unfavorite(auth?.id,{favoriteStories: data?._id})
-       await refetchStory()
-     }
+    if (type === "unfavorite") {
+      const q = await AuthService.unfavorite(auth?.id, {
+        favoriteStories: data?._id,
+      });
+      await refetchStory();
+    }
+  };
+
+  // NOTE Read Story
+  const readStory = useMutationHooks((data) => AuthService.read(data))
+  const router = useRouter()
+  
+  const handleRead = (type) => {
+      if(type ===  "old"){
+        readStory.mutate({
+          id: auth.id,
+          data: {
+            seenStory: id
+          }
+        })
+        router.push(`/chuong/${id}/${1}`)
+      }
+      if(type ===  "new"){
+        readStory.mutate({
+          id: auth.id,
+          data: {
+            seenStory: id
+          }
+        })
+        router.push(`/chuong/${id}/${data?.chapter?.length}`)
+      }
   }
 
   return (
@@ -116,92 +159,116 @@ export default function Story({ id }) {
           property="og:description"
           content="And a social description for our cool page"
         />
-        <meta
-          property="og:image"
-          content={data?.thumbnail}
-        />
+        <meta property="og:image" content={data?.thumbnail} />
       </Head>
-      {isLoading ? <Skeleton /> : <div className="z-50 p-4 bg-white rounded-lg w-full text-black translate-y-[-140px] flex gap-8">
-        <div>
-          <img width={210} height={280} src={data?.thumbnail} alt="..." />
-        </div>
-        <div className="flex flex-col gap-8">
-          <h1 className="text-[20px] font-semibold">{data?.title}</h1>
-          <div className="flex gap-2 flex-wrap">
-            <span className="border px-4 py-1 rounded-full border-sky-600 text-sky-600 text-[13px]">
-              {data?.genre}
-            </span>
-            <span className="border px-4 py-1 rounded-full border-lime-600 text-lime-600  text-[13px]">
-              {data?.character}
-            </span>
-            <span className="border px-4 py-1 rounded-full border-red-600 text-red-600 text-[13px]">
-              {data?.progress}
-            </span>
-            <span className="border px-4 py-1 rounded-full border-pink-600 text-pink-600 text-[13px]">
-              {data?.sect}
-            </span>
-            <span className="border px-4 py-1 rounded-full border-slate-600 text-slate-600 text-[13px]">
-              {data?.worldScene}
-            </span>
-            <span className="border px-4 py-1 rounded-full border-[#8B6514] text-[#8B6514] text-[13px]">
-              {data?.originalLook}
-            </span>
+      {isLoading ? (
+        <Skeleton count={10} />
+      ) : (
+        <div className="z-50 p-4 bg-white rounded-lg w-full text-black translate-y-[-140px] flex gap-8">
+          <div>
+            <img width={210} height={280} src={data?.thumbnail} alt="..." />
           </div>
-          <div className="flex gap-8 text-[14px]">
-            <div className="flex flex-col">
-              <span className="font-bold">{data?.chapter?.length?.pad()}</span>
-              <span>Chương</span>
+          <div className="flex flex-col gap-8">
+            <h1 className="text-[20px] font-semibold">{data?.title}</h1>
+            <div className="flex gap-2 flex-wrap">
+              <span className="border px-4 py-1 rounded-full border-sky-600 text-sky-600 text-[13px]">
+                {data?.genre}
+              </span>
+              <span className="border px-4 py-1 rounded-full border-lime-600 text-lime-600  text-[13px]">
+                {data?.character}
+              </span>
+              <span className="border px-4 py-1 rounded-full border-red-600 text-red-600 text-[13px]">
+                {data?.progress}
+              </span>
+              <span className="border px-4 py-1 rounded-full border-pink-600 text-pink-600 text-[13px]">
+                {data?.sect}
+              </span>
+              <span className="border px-4 py-1 rounded-full border-slate-600 text-slate-600 text-[13px]">
+                {data?.worldScene}
+              </span>
+              <span className="border px-4 py-1 rounded-full border-[#8B6514] text-[#8B6514] text-[13px]">
+                {data?.originalLook}
+              </span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold">14</span>
-              <span>Chương/tuần</span>
+            <div className="flex gap-8 text-[14px]">
+              <div className="flex flex-col">
+                <span className="font-bold">
+                  {data?.chapter?.length?.pad()}
+                </span>
+                <span>Chương</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold">14</span>
+                <span>Chương/tuần</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold">{(data?.chapter?.reduce((acc,cur)=> acc + cur.view,0).pad())}</span>
+                <span>Lượt đọc</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold">{data?.liked?.length.pad()}</span>
+                <span>Lưu</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold">945.3K</span>
-              <span>Lượt đọc</span>
+            <div className="text-[17px] flex items-center gap-2">
+              <div className="flex text-yellow-300">
+              <AiFillStar
+                  color={totalRating >= 1 ? "#FB923C" : "#E2E8F0"}
+                />
+                <AiFillStar
+                  color={totalRating >= 2 ? "#FB923C" : "#E2E8F0"}
+                />
+                <AiFillStar
+                  color={totalRating >= 3 ? "#FB923C" : "#E2E8F0"}
+                />
+                <AiFillStar
+                  color={totalRating >= 4 ? "#FB923C" : "#E2E8F0"}
+                />
+                <AiFillStar
+                  color={totalRating >= 5 ? "#FB923C" : "#E2E8F0"}
+                />
+              </div>
+              <p className="text-[13px]">
+                {totalRating}
+                /5 ({data?.rating?.length} đánh giá)
+              </p>
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold">{data?.liked?.length.pad()}</span>
-              <span>Lưu</span>
-            </div>
-          </div>
-          <div className="text-[17px] flex items-center gap-2">
-            <div className="flex text-yellow-300">
-              <AiFillStar />
-              <AiFillStar />
-              <AiFillStar />
-              <AiFillStar />
-              <AiFillStar />
-            </div>
-            <p className="text-[13px]">4.81/5 (25 đánh giá)</p>
-          </div>
-          <div className="flex gap-4">
-            <button className="flex transition-all duration-300 hover:bg-[#8b6514] font-semibold rounded-full items-center gap-2 bg-[#B78A28] px-6 py-2 text-white">
-              <BiGlassesAlt size={26} />
-              Đọc truyện
-            </button>
-            
-            <button className="flex transition-all duration-300 hover:bg-red-800 font-semibold rounded-full items-center gap-2 bg-red-600 px-6 py-2 text-white">
-              <GiRead size={26} />
-              Đọc mới nhất
-            </button>
+            <div className="flex gap-4">
+              <button onClick={()=> handleRead("old")} className="flex transition-all duration-300 hover:bg-[#8b6514] font-semibold rounded-full items-center gap-2 bg-[#B78A28] px-6 py-2 text-white">
+                <BiGlassesAlt size={26} />
+                Đọc truyện
+              </button>
 
-            {
-              data?.liked?.includes(auth?.id) ? <button onClick={()=>handleFavorite("unfavorite")} className="flex transition-all duration-300 hover:bg-[#666666] font-semibold rounded-full items-center gap-2 text-[#666666] bg-white px-6 border border-[#666666] py-2 hover:text-white">
-              <BsFillBookmarkFill size={20} />
-              Bỏ đánh dấu
-            </button>: <button onClick={()=>handleFavorite("favorite")} className="flex transition-all duration-300 hover:bg-[#666666] font-semibold rounded-full items-center gap-2 text-[#666666] bg-white px-6 border border-[#666666] py-2 hover:text-white">
-              <BsFillBookmarkFill size={20} />
-              Đánh dấu
-            </button>
-            }
-            <button className="flex transition-all duration-300 hover:border-red-600 font-semibold rounded-full items-center gap-2 text-[#8B6514] bg-[#F7F5F0] px-6 border border-[#8B6514] py-2 hover:text-black">
-              <IoMdFlower fill="#FAA9A6" size={26} />
-              Đề cử
-            </button>
+              <button onClick={()=> handleRead("new")} className="flex transition-all duration-300 hover:bg-red-800 font-semibold rounded-full items-center gap-2 bg-red-600 px-6 py-2 text-white">
+                <GiRead size={26} />
+                Đọc mới nhất
+              </button>
+
+              {data?.liked?.includes(auth?.id) ? (
+                <button
+                  onClick={() => handleFavorite("unfavorite")}
+                  className="flex transition-all duration-300 hover:bg-[#666666] font-semibold rounded-full items-center gap-2 text-[#666666] bg-white px-6 border border-[#666666] py-2 hover:text-white"
+                >
+                  <BsFillBookmarkFill size={20} />
+                  Bỏ đánh dấu
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleFavorite("favorite")}
+                  className="flex transition-all duration-300 hover:bg-[#666666] font-semibold rounded-full items-center gap-2 text-[#666666] bg-white px-6 border border-[#666666] py-2 hover:text-white"
+                >
+                  <BsFillBookmarkFill size={20} />
+                  Đánh dấu
+                </button>
+              )}
+              <button className="flex transition-all duration-300 hover:border-red-600 font-semibold rounded-full items-center gap-2 text-[#8B6514] bg-[#F7F5F0] px-6 border border-[#8B6514] py-2 hover:text-black">
+                <IoMdFlower fill="#FAA9A6" size={26} />
+                Đề cử
+              </button>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
       <div className="text-black px-4 translate-y-[-120px]">
         <Tab.Group>
           <Tab.List className="border-b-2 flex gap-8 pb-2 text-[18px] font-semibold">
@@ -340,8 +407,13 @@ export default function Story({ id }) {
                     <div className="flex items-center gap-16 py-4 border-b border-t">
                       <h1 className="font-semibold w-[20%]">Chương mới</h1>
                       <div className="flex justify-between flex-1">
-                        <span>{data?.chapter[chapterLength - 1]?.title}</span>
-                        <span className="text-[12px]">{(data?.chapter[chapterLength - 1]?.createdAt)?.slice(0,10)}</span>
+                        <span>{data?.chapter[0]?.title}</span>
+                        <span className="text-[12px]">
+                          {data?.chapter[chapterLength - 1]?.createdAt?.slice(
+                            0,
+                            10
+                          )}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -350,9 +422,7 @@ export default function Story({ id }) {
                   <img
                     src={data?.userId.avatar}
                     alt=""
-                    width={64}
-                    height={64}
-                    className="rounded-full"
+                    className="rounded-full w-[64px] h-[64px]"
                   />
                   <h1 className="text-[13px] font-semibold mb-4">
                     {data?.userId.displayName}
@@ -361,23 +431,25 @@ export default function Story({ id }) {
                     <div className="flex flex-col items-center">
                       <ImBook fill="#8B6514" />
                       <span className="text-[13px]">Số truyện</span>
-                      <span>{data?.userId?.storyWritten?.length}</span>
+                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
                     </div>
                     <div className="flex flex-col items-center">
                       <FaLayerGroup fill="#8B6514" />
                       <span className="text-[13px]">Số chương</span>
-                      <span>{data?.userId?.storyWritten?.length}</span>
+                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
                     </div>
                     <div className="flex flex-col items-center">
                       <BsFillCaretUpSquareFill fill="#8B6514" />
                       <span className="text-[13px]">Cấp</span>
-                      <span>{data?.userId?.storyWritten?.length}</span>
+                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
                     </div>
                   </div>
                 </div>
               </div>
             </Tab.Panel>
-            <Tab.Panel>Content 2</Tab.Panel>
+            <Tab.Panel>
+              <RateTab idStory={id} />
+            </Tab.Panel>
             <Tab.Panel>
               <div className="w-full flex justify-between py-4">
                 <h1 className="text-[20px] font-semibold">Danh sách chương </h1>
@@ -393,13 +465,15 @@ export default function Story({ id }) {
                   <>
                     {data?.chapter?.map((item) => (
                       <Link
-                        href={`/chuong/${item._id}`}
-                        className=" truncate flex gap-2 items-center cursor-pointer"
+                        key={item._id}
+                        href={`/chuong/${id}/${item?.chapterNo}`}
+                        className="truncate flex gap-2 items-center cursor-pointer"
                       >
+                        <span className="font-bold">Chương {item?.chapterNo}:</span>
                         <span className="text-[14px] truncate hover:text-[#8B6514]">
                           {item.title}
                         </span>
-                        <span className="text-[11px]">
+                        <span className="text-[11px] ml-auto">
                           {item.createdAt.slice(0, 10)}
                         </span>
                       </Link>
@@ -407,15 +481,16 @@ export default function Story({ id }) {
                   </>
                 ) : (
                   <>
-                    {data?.chapter?.reverse().map((item) => (
-                      <Link
-                        href={`/chuong/${item._id}`}
+                    {data?.chapter?.toReversed().map((item) => (
+                      <Link key={item._id}
+                        href={`/chuong/${id}/${item?.chapterNo}`}
                         className=" truncate flex gap-2 items-center cursor-pointer"
                       >
+                        <span className="font-bold">Chương {item?.chapterNo}:</span>
                         <span className="text-[14px] truncate hover:text-[#8B6514]">
                           {item.title}
                         </span>
-                        <span className="text-[11px]">
+                        <span className="text-[11px] ml-auto">
                           {item.createdAt.slice(0, 10)}
                         </span>
                       </Link>
@@ -432,8 +507,8 @@ export default function Story({ id }) {
                   </h1>
                   <div className="flex items-center gap-4">
                     <img
-                      className="rounded-full w-12"
-                      src={auth.avatar}
+                      className="rounded-full w-[42px] h-[42px]"
+                      src={auth.avatar || "https://static.cdnno.com/user/default/200.jpg"}
                       alt="..."
                     />
                     <div className="flex-1 relative">
@@ -511,7 +586,9 @@ export default function Story({ id }) {
                 </div>
               </div>
             </Tab.Panel>
-            <Tab.Panel><Fantab /></Tab.Panel>
+            <Tab.Panel>
+              <Fantab />
+            </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
       </div>

@@ -81,6 +81,7 @@ const loginUser = (userLogin) => {
 };
 
 const updateUser = (id, data) => {
+  console.log(data)
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
@@ -282,7 +283,7 @@ const getReadingStory = (id, data) => {
     try {
       const checkUser = await User.findOne({
         _id: id,
-      }).populate("seenStory", "title thumbnail chapter");
+      }).populate("seenStory", "title thumbnail chapter chapter_readed");
       if (checkUser === null) {
         resolve({
           status: "OK",
@@ -308,7 +309,7 @@ const getFavoriteStories = (id, data) => {
     try {
       const checkUser = await User.findOne({
         _id: id,
-      }).populate("favoriteStories", "title thumbnail chapter");
+      }).populate("favoriteStories", "title thumbnail chapter chapter_readed");
       if (checkUser === null) {
         resolve({
           status: "OK",

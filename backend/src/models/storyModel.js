@@ -6,6 +6,7 @@ const storySchema = new mongoose.Schema(
     description: String,
     thumbnail: {type: String,default: "https://static.cdnno.com/poster/day-bygones/300.jpg?1683542627"},
     view: { type: Number, default: 0 },
+    chapter_readed: { type: Number, default: 0 },
     published: { type: Boolean, default: false },
     genre: { type: String, ref: "Genre" },
     originalLook: { type: String },

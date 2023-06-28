@@ -59,7 +59,6 @@ const getall = (limit = 10, page = 0, sort) => {
       if (sort) {
         const objSort = {};
         objSort[sort[1]] = sort[0];
-        console.log(objSort)
         const allUserSort = await Story.find()
           .limit(limit)
           .skip(page * limit)
@@ -76,7 +75,7 @@ const getall = (limit = 10, page = 0, sort) => {
       const allUser = await Story.find()
         .limit(limit)
         .skip(page * limit)
-        .sort({ createdAt: "desc" }).populate('userId',"displayName");
+        .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
       resolve({
         status: "OK",
         message: "Lấy danh sách truyện thành công!",
@@ -245,11 +244,85 @@ const updateStory = (id, data) => {
   });
 };
 
+const getByRank = (limit = 10, page = 0, sort) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const totalStory = await Story.count();
+      if (sort) {
+        const objSort = {};
+        objSort[sort] = "desc";
+        const allStorySort = await Story.find()
+          .limit(limit)
+          .skip(page * limit)
+          .sort(objSort).populate("userId","displayName").populate("chapter","view");
+        resolve({
+          status: "OK",
+          message: "Lấy danh sách truyện dùng thành công!",
+          data: allStorySort,
+          totalStory: totalStory,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(totalStory / limit),
+        });
+      }
+      const allStory = await Story.find()
+        .limit(limit)
+        .skip(page * limit)
+        .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
+      resolve({
+        status: "OK",
+        message: "Lấy danh sách truyện thành công!",
+        data: allStory,
+        totalStory: totalStory,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalStory / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getByFilter = (limit = 10, page = 0, filter) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const totalStory = await Story.count();
+      if (filter) {
+        const allStorySort = await Story.find(filter)
+          .limit(limit)
+          .skip(page * limit)
+          .populate("userId","displayName").populate("chapter","view");
+        resolve({
+          status: "OK",
+          message: "Lấy danh sách truyện dùng thành công!",
+          data: allStorySort,
+          totalStory: allStorySort.length,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(allStorySort.length / limit),
+        });
+      }
+      const allStory = await Story.find()
+        .limit(limit)
+        .skip(page * limit)
+        .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
+      resolve({
+        status: "OK",
+        message: "Lấy danh sách truyện thành công!",
+        data: allStory,
+        totalStory: totalStory,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalStory / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createStory,
   getall,
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,getStorySortRating
+  getAllAuthor,getStorySortRating,getByRank,getByFilter
 };

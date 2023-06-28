@@ -15,6 +15,7 @@ const createChapter = (newChapter) => {
         chapterNo: chapterOfStory.chapter.length + 1,
       });
       await chapterOfStory.updateOne({ $push: { chapter: created._id } });
+      await chapterOfStory.updateOne({ $push: { quantityChapter: chapterOfStory.chapter.length } });
       await Notic.create({
         title: `Truyện mà bạn đã theo dõi đã cập nhật chương mới!`,
         desc: `Truyện "${chapterOfStory.title}" đã ra chương ${created.chapterNo} mau mau đến đọc thôi!`,
@@ -244,8 +245,16 @@ const view = (id) => {
       const updateUser = await Chapter.findByIdAndUpdate(id, {view: checkUser.view + 1}, {
         new: true,
       });
+      const viewStory = await Story.findByIdAndUpdate(updateUser.storyId, {view: checkUser.view + 1}, {
+        new: true,
+      })
+      if(viewStory.chapter_readed <= updateUser.chapterNo){
+        const viewStorys = await Story.findByIdAndUpdate(updateUser.storyId, {chapter_readed: updateUser.chapterNo}, {
+          new: true,
+        })
+      }
       resolve({
-        status: "OK",
+        status: "OK"
       });
     } catch (e) {
       reject(e);

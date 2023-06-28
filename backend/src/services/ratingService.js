@@ -41,7 +41,7 @@ const getAll = (id, limit = 10) => {
         const avgCharacter = ratings.reduce((acc,cur) => (acc + cur.character) ,0)
         const avgWorldScene = ratings.reduce((acc,cur) => (acc + cur.worldScene) ,0)
         const avgContent = ratings.reduce((acc,cur) => (acc + cur.content) ,0)
-      const avg = (avgCharacter/ratings.length + avgContent/ratings.length + avgWorldScene/ratings.length)/ratings.length
+      const avg = (avgCharacter + avgContent + avgWorldScene ) / (ratings.length*3)
       resolve({
         status: "OK",
         message: "Lấy danh sách thành công!",

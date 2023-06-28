@@ -131,11 +131,65 @@ const updateStory = async (req, res) => {
   }
 };
 
+const getByRank = async (req, res) => {
+  try {
+    const { limit, page, sort } = req.query;
+    const response = await StoryService.getByRank(
+      Number(limit) || 10,
+      Number(page) || 0,
+      sort
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const getByFilter = async (req, res) => {
+  try {
+    const filter = req.body
+    if(filter.genre.length < 1){
+      delete filter.genre
+    }
+    if(filter.progress.length < 1){
+      delete filter.progress
+    }
+    if(filter.view.length < 1){
+      delete filter.view
+    }
+    if(filter.worldScene.length < 1){
+      delete filter.worldScene
+    }
+    if(filter.sect.length < 1){
+      delete filter.sect
+    }
+    if(filter.character.length < 1){
+      delete filter.character
+    }
+    if(filter.title.length < 1){
+      delete filter.title
+    }
+    const { limit, page } = req.query;
+    const response = await StoryService.getByFilter(
+      Number(limit) || 10,
+      Number(page) || 0,
+      filter
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createStory,
   getAll,
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,getStorySortRating
+  getAllAuthor,getStorySortRating,getByRank,getByFilter
 };

@@ -38,7 +38,7 @@ export default function TopList({ title = "Title",data=[],type }) {
     if (type === "read") {
       return (
         <p className="flex text-emerald-500 items-center text-[12px] font-semibold gap-2">
-          {num} <FaGlasses />
+          {(data?.view?.pad(1))} <FaGlasses />
         </p>
       );
     }
@@ -87,6 +87,14 @@ export default function TopList({ title = "Title",data=[],type }) {
   );
 };
 
+Number.prototype.pad = function (size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {
+    s = "0" + s;
+  }
+  return s;
+};
+
  const Item = ({index,data}) =>  {
     return(
         <div className="flex items-center gap-2 border-t py-2 justify-between">
@@ -94,7 +102,7 @@ export default function TopList({ title = "Title",data=[],type }) {
             {index===3&&<img src="https://metruyencv.com/assets/images/icons/medal-3.svg" alt="?"/>}
             {(index!==2 && index!==3)&& <p className="w-[10%] pl-2 text-[14px] font-semibold">{index}</p>}
             <Link href={`/truyen/${data?._id}`} className="w-[70%] text-[14px] hover:text-[#b78a28]"><p className="truncate">{data?.title}</p></Link>
-            <i className="text-[12px]">123.2131</i>
+            <i className="text-[12px]">{(data?.view?.pad(1))}</i>
         </div>
     )
  }

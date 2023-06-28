@@ -162,8 +162,14 @@ export default function CommentCard({
                   <h1 className="text-[13px] font-semibold">
                     {item.userId.displayName}
                   </h1>
-                  <span className="text-[10px]">Đã trả lời: {name}</span>
-                  <p className="text-[14px] mt-2 border-t pt-2">{item.cmt}</p>
+                  <p className="text-[14px] pt-1">{item.cmt}</p>
+                  <div className="flex gap-8 mt-1 justify-between">
+                    <div className="flex gap-4">
+                      <p className="text-[10px] flex items-center gap-1 opacity-70  cursor-pointer font-semibold"> <AiFillLike /> 0</p>
+                      <p className="text-[10px] flex items-center gap-1 opacity-70 font-semibold"><BiTimeFive size={10} /> 1 tiếng trước</p>
+                    </div>
+                    <MdReport className="opacity-6 cursor-pointer" />
+                  </div>
                 </div>
               </div>
             ))}

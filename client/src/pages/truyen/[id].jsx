@@ -64,11 +64,16 @@ export default function Story({ id }) {
     return res.data;
   };
 
-  console.log(data)
-
-  const totalRating = Math.round(data?.rating?.reduce(
-    (acc,cur) => (acc + (cur.content + cur.character + cur.worldScene)/data?.rating?.length) ,0
-  )/data?.rating?.length*100)/100
+  const totalRating =
+    Math.round(
+      (data?.rating?.reduce(
+        (acc, cur) =>
+          acc +
+          (cur.content + cur.character + cur.worldScene) / (data?.rating?.length*3),
+        0
+      )) *
+        100
+    ) / 100;
 
   // Get Comments
   const queryCmts = useQuery(["cmtsStory", limit], fetchCmts, {
@@ -94,13 +99,12 @@ export default function Story({ id }) {
   });
 
   const send = () => {
-    if(auth.id === ""){
-      toast.warning("Bạn chưa đăng nhập!")
+    if (auth.id === "") {
+      toast.warning("Bạn chưa đăng nhập!");
+    } else {
+      mutation.mutate({ ...comment, userId: auth.id });
+      setComment({ ...comment, cmt: "" });
     }
-   else{
-    mutation.mutate({ ...comment, userId: auth.id });
-    setComment({ ...comment, cmt: "" });
-   }
   };
 
   useEffect(() => {
@@ -125,29 +129,29 @@ export default function Story({ id }) {
   };
 
   // NOTE Read Story
-  const readStory = useMutationHooks((data) => AuthService.read(data))
-  const router = useRouter()
-  
+  const readStory = useMutationHooks((data) => AuthService.read(data));
+  const router = useRouter();
+
   const handleRead = (type) => {
-      if(type ===  "old"){
-        readStory.mutate({
-          id: auth.id,
-          data: {
-            seenStory: id
-          }
-        })
-        router.push(`/chuong/${id}/${1}`)
-      }
-      if(type ===  "new"){
-        readStory.mutate({
-          id: auth.id,
-          data: {
-            seenStory: id
-          }
-        })
-        router.push(`/chuong/${id}/${data?.chapter?.length}`)
-      }
-  }
+    if (type === "old") {
+      readStory.mutate({
+        id: auth.id,
+        data: {
+          seenStory: id,
+        },
+      });
+      router.push(`/chuong/${id}/${1}`);
+    }
+    if (type === "new") {
+      readStory.mutate({
+        id: auth.id,
+        data: {
+          seenStory: id,
+        },
+      });
+      router.push(`/chuong/${id}/${data?.chapter?.length}`);
+    }
+  };
 
   return (
     <div className="bg-white w-[1200px] px-12 pb-12">
@@ -202,7 +206,9 @@ export default function Story({ id }) {
                 <span>Chương/tuần</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-bold">{(data?.chapter?.reduce((acc,cur)=> acc + cur.view,0).pad())}</span>
+                <span className="font-bold">
+                  {data?.chapter?.reduce((acc, cur) => acc + cur.view, 0).pad()}
+                </span>
                 <span>Lượt đọc</span>
               </div>
               <div className="flex flex-col">
@@ -212,21 +218,11 @@ export default function Story({ id }) {
             </div>
             <div className="text-[17px] flex items-center gap-2">
               <div className="flex text-yellow-300">
-              <AiFillStar
-                  color={totalRating >= 1 ? "#FB923C" : "#E2E8F0"}
-                />
-                <AiFillStar
-                  color={totalRating >= 2 ? "#FB923C" : "#E2E8F0"}
-                />
-                <AiFillStar
-                  color={totalRating >= 3 ? "#FB923C" : "#E2E8F0"}
-                />
-                <AiFillStar
-                  color={totalRating >= 4 ? "#FB923C" : "#E2E8F0"}
-                />
-                <AiFillStar
-                  color={totalRating >= 5 ? "#FB923C" : "#E2E8F0"}
-                />
+                <AiFillStar color={totalRating >= 1 ? "#FB923C" : "#E2E8F0"} />
+                <AiFillStar color={totalRating >= 2 ? "#FB923C" : "#E2E8F0"} />
+                <AiFillStar color={totalRating >= 3 ? "#FB923C" : "#E2E8F0"} />
+                <AiFillStar color={totalRating >= 4 ? "#FB923C" : "#E2E8F0"} />
+                <AiFillStar color={totalRating >= 5 ? "#FB923C" : "#E2E8F0"} />
               </div>
               <p className="text-[13px]">
                 {totalRating}
@@ -234,15 +230,24 @@ export default function Story({ id }) {
               </p>
             </div>
             <div className="flex gap-4">
-              <button onClick={()=> handleRead("old")} className="flex transition-all duration-300 hover:bg-[#8b6514] font-semibold rounded-full items-center gap-2 bg-[#B78A28] px-6 py-2 text-white">
-                <BiGlassesAlt size={26} />
-                Đọc truyện
-              </button>
-
-              <button onClick={()=> handleRead("new")} className="flex transition-all duration-300 hover:bg-red-800 font-semibold rounded-full items-center gap-2 bg-red-600 px-6 py-2 text-white">
-                <GiRead size={26} />
-                Đọc mới nhất
-              </button>
+              {data?.chapter?.length > 0 && (
+                <button
+                  onClick={() => handleRead("old")}
+                  className="flex transition-all duration-300 hover:bg-[#8b6514] font-semibold rounded-full items-center gap-2 bg-[#B78A28] px-6 py-2 text-white"
+                >
+                  <BiGlassesAlt size={26} />
+                  Đọc truyện
+                </button>
+              )}
+              {data?.chapter?.length > 0 && (
+                <button
+                  onClick={() => handleRead("new")}
+                  className="flex transition-all duration-300 hover:bg-red-800 font-semibold rounded-full items-center gap-2 bg-red-600 px-6 py-2 text-white"
+                >
+                  <GiRead size={26} />
+                  Đọc mới nhất
+                </button>
+              )}
 
               {data?.liked?.includes(auth?.id) ? (
                 <button
@@ -431,17 +436,23 @@ export default function Story({ id }) {
                     <div className="flex flex-col items-center">
                       <ImBook fill="#8B6514" />
                       <span className="text-[13px]">Số truyện</span>
-                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
+                      <b className="text-[13px]">
+                        {data?.userId?.storyWritten?.length.pad()}
+                      </b>
                     </div>
                     <div className="flex flex-col items-center">
                       <FaLayerGroup fill="#8B6514" />
                       <span className="text-[13px]">Số chương</span>
-                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
+                      <b className="text-[13px]">
+                        {data?.userId?.storyWritten?.length.pad()}
+                      </b>
                     </div>
                     <div className="flex flex-col items-center">
                       <BsFillCaretUpSquareFill fill="#8B6514" />
                       <span className="text-[13px]">Cấp</span>
-                      <b className="text-[13px]">{data?.userId?.storyWritten?.length.pad()}</b>
+                      <b className="text-[13px]">
+                        {data?.userId?.storyWritten?.length.pad()}
+                      </b>
                     </div>
                   </div>
                 </div>
@@ -469,7 +480,9 @@ export default function Story({ id }) {
                         href={`/chuong/${id}/${item?.chapterNo}`}
                         className="truncate flex gap-2 items-center cursor-pointer"
                       >
-                        <span className="font-bold">Chương {item?.chapterNo}:</span>
+                        <span className="font-bold">
+                          Chương {item?.chapterNo}:
+                        </span>
                         <span className="text-[14px] truncate hover:text-[#8B6514]">
                           {item.title}
                         </span>
@@ -482,11 +495,14 @@ export default function Story({ id }) {
                 ) : (
                   <>
                     {data?.chapter?.toReversed().map((item) => (
-                      <Link key={item._id}
+                      <Link
+                        key={item._id}
                         href={`/chuong/${id}/${item?.chapterNo}`}
                         className=" truncate flex gap-2 items-center cursor-pointer"
                       >
-                        <span className="font-bold">Chương {item?.chapterNo}:</span>
+                        <span className="font-bold">
+                          Chương {item?.chapterNo}:
+                        </span>
                         <span className="text-[14px] truncate hover:text-[#8B6514]">
                           {item.title}
                         </span>
@@ -508,7 +524,10 @@ export default function Story({ id }) {
                   <div className="flex items-center gap-4">
                     <img
                       className="rounded-full w-[42px] h-[42px]"
-                      src={auth.avatar || "https://static.cdnno.com/user/default/200.jpg"}
+                      src={
+                        auth.avatar ||
+                        "https://static.cdnno.com/user/default/200.jpg"
+                      }
                       alt="..."
                     />
                     <div className="flex-1 relative">

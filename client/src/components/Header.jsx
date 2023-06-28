@@ -27,6 +27,8 @@ import { IoMdFlower } from "react-icons/io";
 import { useMutationHooks } from "hooks/useMutationHook";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from 'use-debounce';
+import * as StoryService from "services/storyService"
 
 export default function Header() {
   const router = useRouter();
@@ -166,7 +168,7 @@ export default function Header() {
   };
 
   const query = useQuery({
-    queryKey: ['noticfecth', auth?.id],
+    queryKey: ["noticfecth", auth?.id],
     queryFn: fetch,
     // The query will not execute until the userId exists
     enabled: !!auth?.id,
@@ -182,6 +184,7 @@ export default function Header() {
       },
     });
   };
+
 
   return (
     <section
@@ -345,7 +348,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                     })
                   }
                   className="text-black w-[45%] hover:text-[#835443] cursor-pointer"
@@ -355,7 +358,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Võng Du" },
                     })
                   }
@@ -366,7 +369,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Đồng Nhân" },
                     })
                   }
@@ -377,7 +380,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Cạnh Kỹ" },
                     })
                   }
@@ -388,7 +391,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Kiếm Hiệp" },
                     })
                   }
@@ -399,7 +402,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Tiên Hiệp" },
                     })
                   }
@@ -410,7 +413,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Khoa Huyễn" },
                     })
                   }
@@ -421,7 +424,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Đô Thị" },
                     })
                   }
@@ -432,7 +435,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Dã Sử" },
                     })
                   }
@@ -443,7 +446,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Huyền Nghi" },
                     })
                   }
@@ -454,7 +457,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Huyền Huyễn" },
                     })
                   }
@@ -465,7 +468,7 @@ export default function Header() {
                 <p
                   onClick={() =>
                     router.push({
-                      pathname: `/truyen`,
+                      pathname: `/tim-kiem`,
                       query: { genre: "Kỳ Ảo" },
                     })
                   }
@@ -485,32 +488,33 @@ export default function Header() {
             </Popover.Trigger>
             <Popover.Content>
               <div className="p-6 w-[200px] flex justify-between flex-wrap gap-4">
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Thịnh Hành
-                </p>
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                </Link>
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Đọc Nhiều
-                </p>
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                </Link>
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Tặng Thưởng
-                </p>
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                </Link>
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Đề Cử
-                </p>
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                </Link>
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Yêu Thích
-                </p>
-                <p className="w-full text-black cursor-pointer hover:text-[#835443]">
+                </Link>
+                <Link href="/bang-xep-hang" className="w-full text-black cursor-pointer hover:text-[#835443]">
                   Thảo Luận
-                </p>
+                </Link>
               </div>
             </Popover.Content>
           </Popover>
         </div>
-        <div className="bg-white w-[320px] focus:border-blue border-2 border-solid h-[36px] rounded-full overflow-hidden relative">
+        {/* NOTE search */}
+        <div className="bg-white w-[320px] relative focus:border-blue border-2 border-solid h-[36px] rounded-full">
           <input
             placeholder="Tìm kiếm"
-            className="w-full h-[32px] pl-4 pr-12 text-black outline-none bg-white"
+            className="w-full h-[32px] pl-4 pr-12 text-black rounded-full outline-none bg-white"
             type="text"
           />
           <Link
@@ -539,8 +543,11 @@ export default function Header() {
                   className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-[400px]"
                 >
                   {data?.data?.map((item) => (
-                    <li>
-                      <Link href={item.link}>
+                    <li  key={item._id}>
+                      <Link
+                        className="text-black"
+                        href={item.link}
+                      >
                         <img
                           className="w-[42px] h-[42px] rounded-full"
                           src={item.thumbnail}
@@ -556,13 +563,13 @@ export default function Header() {
 
                   {data?.data?.length === 0 ? (
                     <li className="flex">
-                      <i className="w-full flex justify-center items-center">
+                      <i className="w-full flex text-black justify-center items-center">
                         Chưa có thông báo mới!
                       </i>
                     </li>
                   ) : (
                     <p
-                      className="w-full flex items-center justify-center py-2 italic hover:text-sky-600"
+                      className="w-full flex items-center justify-center text-black py-2 italic hover:text-sky-600"
                       onClick={() => goToNotic(8)}
                     >
                       Xem thêm
@@ -668,12 +675,12 @@ export default function Header() {
             <div className="flex gap-8">
               <span
                 onClick={handlerR}
-                className="cursor-pointer text-black hover:text-[#835443]"
+                className="cursor-pointer text-white hover:text-[#835443]"
               >
                 Đăng ký
               </span>
               <span
-                className="cursor-pointer text-black hover:text-[#835443]"
+                className="cursor-pointer text-white hover:text-[#835443]"
                 onClick={handler}
               >
                 Đăng nhập

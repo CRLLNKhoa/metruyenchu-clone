@@ -44,7 +44,7 @@ export default function SettingTab() {
   useEffect(() => {
     if(data?.status==="OK"){
       toast.success("Cập nhật thông tin thành công!")
-      dispath(updateAuth(data.data))
+      dispath(updateAuth(data?.data))
     }
   }, [data]);
 
@@ -133,6 +133,7 @@ export default function SettingTab() {
                 type="radio"
                 name="sex"
                 id="nam"
+                onChange={()=>setDataUpdate({ ...dataUpdate, sex: 1 })}
               />
               <label className="cursor-pointer" htmlFor="nam">
                 Nam
@@ -146,6 +147,7 @@ export default function SettingTab() {
                 type="radio"
                 name="sex"
                 id="nu"
+                onChange={()=>setDataUpdate({ ...dataUpdate, sex: 2 })}
               />
               <label className="cursor-pointer" htmlFor="nu">
                 Nữ
@@ -159,6 +161,7 @@ export default function SettingTab() {
                 defaultChecked={auth.sex === 3}
                 ref={khacRef}
                 className="cursor-pointer"
+                onChange={()=>setDataUpdate({ ...dataUpdate, sex: 3 })}
               />
               <label className="cursor-pointer" htmlFor="khac">
                 Khác

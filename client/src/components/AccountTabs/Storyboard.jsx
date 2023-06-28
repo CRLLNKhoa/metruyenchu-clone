@@ -66,6 +66,7 @@ export default function Storyboard({ userId }) {
               img={item.thumbnail}
               title={item.title}
               id={item._id}
+              readed={item.chapter_readed}
             />
           ))}
         </div>
@@ -84,6 +85,7 @@ export default function Storyboard({ userId }) {
               img={item.thumbnail}
               title={item.title}
               id={item._id}
+              readed={item.chapter_readed}
               type
               refetchF={refetchF}
             />
@@ -100,7 +102,7 @@ const Item = ({
   chapter = 0,
   id = 0,
   type,
-  refetchF,
+  refetchF,readed=0
 }) => {
   const auth = useSelector((state) => state.auth);
   // NOTE UNFAVORITE
@@ -119,7 +121,7 @@ const Item = ({
         >
           {title}
         </Link>
-        <span className="text-[12px]">Đã đọc: 0 / {chapter}</span>
+        <span className="text-[12px]">Đã đọc: {readed} / {chapter}</span>
       </div>
       {type && (
         <span onClick={handleDelete} className="hover:text-red-500">

@@ -18,7 +18,6 @@ export default function Reading() {
   const listReading = useSelector((state)=> state.auth)
   const reading = listReading?.seenStory
   const showData = data && [...reading,...data]
-  
   const uniqueIds = [];
   
   const unique = showData?.filter(element => {
@@ -56,7 +55,7 @@ export default function Reading() {
         </p>
       </div>
       <div className="flex flex-col gap-6">
-        {unique?.map(item=><CardStoreReading key={item._id} thumbnail={item.thumbnail} title={item.title}/>)}
+        {unique?.map(item=><CardStoreReading key={item._id} length={item.chapter.length} readed={item.chapter_readed} thumbnail={item.thumbnail} title={item.title}/>)}
         {isLoading && (Array.from(Array(5).keys()).map(item=><Skeleton height={44} key={item} />))}
       </div>
     </div>

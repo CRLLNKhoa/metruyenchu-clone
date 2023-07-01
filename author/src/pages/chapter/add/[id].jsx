@@ -3,8 +3,6 @@ import LoadingCustom from "components/Loading";
 import { useMutationHooks } from "hooks/useMutationHook";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
 import * as ChapterService from "services/chapterService";
 'use client'

@@ -5,8 +5,6 @@ import { useMutationHooks } from "hooks/useMutationHook";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
 import * as ChapterService from "services/chapterService";
 'use client'

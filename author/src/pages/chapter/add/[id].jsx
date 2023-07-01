@@ -72,7 +72,7 @@ const notifySuccess = () =>
 
 
   return (
-    <div>
+    <>
             <Head>
         <title>Thêm chương truyện</title>
       </Head>
@@ -110,6 +110,6 @@ const notifySuccess = () =>
           Xuất bản
         </button>
       </div>
-    </div>
+    </>
   );
 }

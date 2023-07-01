@@ -20,7 +20,7 @@ export default function Books() {
   const router = useRouter()
 
   useEffect(() => {
-    if(!id){
+    if(id===""){
       router.push("/")
     }
   }, []);

@@ -1,12 +1,6 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import Head from "next/head";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import * as AuthService  from  "services/authService"
-import { updateAuth } from "redux/slice/authSlice";
-import { useEffect, useState } from "react";
-import { isJsonString } from "../../untils";
-import jwt_decode from "jwt-decode";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -4,10 +4,11 @@ const Story = require("../models/storyModel");
 const Notic = require("../models/noticationModel");
 
 const createChapter = (newChapter) => {
-  const { title, content, storyId, chapterNo } = newChapter;
+  const { title, content, storyId } = newChapter;
   return new Promise(async (resolve, reject) => {
     try {
       const chapterOfStory = await Story.findById(storyId).populate("userId","avatar");
+      console.log(chapterOfStory)
       const created = await Chapter.create({
         title,
         content,
@@ -15,7 +16,7 @@ const createChapter = (newChapter) => {
         chapterNo: chapterOfStory.chapter.length + 1,
       });
       await chapterOfStory.updateOne({ $push: { chapter: created._id } });
-      await chapterOfStory.updateOne({ $push: { quantityChapter: chapterOfStory.chapter.length } });
+      // await chapterOfStory.updateOne({ $push: { quantityChapter: chapterOfStory.chapter.length } });
       await Notic.create({
         title: `Truyện mà bạn đã theo dõi đã cập nhật chương mới!`,
         desc: `Truyện "${chapterOfStory.title}" đã ra chương ${created.chapterNo} mau mau đến đọc thôi!`,

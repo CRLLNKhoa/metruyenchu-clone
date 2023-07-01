@@ -2,6 +2,7 @@ const Story = require("../models/storyModel");
 const Author = require("../models/authorModel");
 const Genre = require("../models/genreModel");
 const User = require("../models/userModel");
+const Chapter = require("../models/chapterModel");
 
 const createStory = (newStory) => {
   return new Promise(async (resolve, reject) => {
@@ -208,7 +209,7 @@ const deleteStory = (id) => {
       }
       const deleteStory = await Story.findByIdAndDelete(id);
       await Genre.updateMany({ stories: id }, { $pull: { stories: id } });
-      // await Author.updateMany({stories:id},{$pull: {stories:id}})
+      await Chapter.deleteMany({storyId:id})
       await User.updateMany({ $pull: { storyWritten: id } });
       resolve({
         status: "OK",

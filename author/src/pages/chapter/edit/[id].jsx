@@ -9,6 +9,9 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
 import * as ChapterService from "services/chapterService";
+'use client'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 
 export default function AddChapter() {
   const router = useRouter();
@@ -17,19 +20,36 @@ export default function AddChapter() {
     const res = await ChapterService.getChapter(id);
     return res.data;
   };
-  const query = useQuery({ queryKey: ["story"], queryFn: fetchStory });
+  const query = useQuery({ queryKey: ["chapteredit"], queryFn: fetchStory });
   const { isLoading: isLoadingGet, data: dataGet, refetch } = query;
 
   const [content, setContent] = useState(dataGet?.content);
   const [title, setTitle] = useState("");
+  const [titleS, setTitleS] = useState("");
   const [chapterNo, setChapterNo] = useState("");
   const mutation = useMutationHooks((data) => ChapterService.editChapter(data));
   const { data, isLoading } = mutation;
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+    ],
+    editorProps: {
+      attributes: {
+        class: 'border px-4 py-2 rounded-lg min-h-[200px]',
+      },
+    },
+    onUpdate({ editor }) {
+      setContent(editor.getHTML());
+  },
+    content: content,
+  })
 
   useEffect(() => {
     setContent(dataGet?.content)
     setChapterNo(dataGet?.chapterNo)
     setTitle(dataGet?.title)
+    setTitleS(dataGet?.storyId?.title)
   }, [dataGet]);
 
   const notify = () =>
@@ -57,15 +77,12 @@ export default function AddChapter() {
     });
 
   useEffect(() => {
-    if (data?.status === "ERR") {
-      notify();
-    }
     if (data?.status === "OK") {
-      notifySuccess();
-      setTitle("");
-      setChapterNo("");
-      setContent("");
+    toast.success("Cập nhật thành công!")
     }
+    if (data?.status === "ERR") {
+      toast.error(data?.message)
+      }
   }, [data]);
   return (
     <div>
@@ -79,24 +96,9 @@ export default function AddChapter() {
           <h1 className="text-[12px]  text-black mb-1 dark:text-white">
             Nội dung
           </h1>
-          <ReactQuill
-            className="text-black dark:text-white"
-            theme="snow"
-            value={content}
-            onChange={setContent}
-          />
+          <EditorContent  className="text-black dark:text-white" value={content} editor={editor} />
         </div>
-        <Input title="Tên truyện" value={router.query.name} disable />
-        <div>
-          <p className="title-input">Số chương</p>
-          <input
-            placeholder="Lớn hơn 0"
-            type="number"
-            className="input"
-            value={chapterNo}
-            onChange={(e) => setChapterNo(e.target.value)}
-          />
-        </div>
+        <Input title="Tên truyện" value={titleS} disable />
         <div>
           <p className="title-input">Tên chương</p>
           <input
@@ -114,7 +116,6 @@ export default function AddChapter() {
               data: {
                 title: title,
                 content: content,
-                chapterNo: chapterNo,
               },
             })
           }

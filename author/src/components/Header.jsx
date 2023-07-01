@@ -100,7 +100,7 @@ export default function Header() {
       <div className="text-[#8E8B98] dark:text-[#CFD1D5] flex gap-2 items-center">
         <div className="flex flex-col">
           <p className="text-[14px] select-none text-[#444345] dark:text-[#CFD1D5] text-right">
-            {auth?.name}
+            {auth?.displayName}
           </p>
           <span className="select-none text-[12px] leading-3">
             {auth?.email}
@@ -112,7 +112,7 @@ export default function Header() {
               className="rounded-full cursor-pointer select-none"
               width={40}
               height={40}
-              src={auth?.avatar}
+              src={auth?.avatar || "https://firebasestorage.googleapis.com/v0/b/upload-getlink-ab132.appspot.com/o/myImages%2Fz3933384702915_8957f9705e8e7e84969ca28b2e2174b9.jpg?alt=media&token=971d010b-13a9-45fa-ad2a-7e4f54870865"}
               alt="?"
             />
           </Menu.Button>

@@ -63,7 +63,7 @@ export default function ListChapter({ id }) {
         return (
           <Row justify="center" align="center" className="z-0">
             <Col css={{ d: "flex" }}>
-              <Tooltip placement="bottom" content="Edit user">
+              <Tooltip placement="bottom" content="Edit">
                 <button onClick={() => router.push({pathname:`/chapter/edit/${user._id}`,query: {name: user.title}})}>
                   <AiFillEdit size={20} fill="#ff9d00" />
                 </button>
@@ -72,7 +72,7 @@ export default function ListChapter({ id }) {
             <Col css={{ d: "flex" }}>
               <Tooltip
                placement="bottom"
-                content="Delete user"
+                content="Delete"
                 color="error"
                 onClick={() => mutation.mutate(user._id)}
               >

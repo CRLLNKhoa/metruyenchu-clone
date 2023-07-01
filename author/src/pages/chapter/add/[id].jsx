@@ -7,15 +7,34 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
 import * as ChapterService from "services/chapterService";
+'use client'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Head from "next/head";
 
 export default function AddChapter() {
   const router = useRouter();
   const id = router.query.id
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState("<p>Nội dung truyện! 🌎️</p>");
   const [title, setTitle] = useState("");
   const [chapterNo, setChapterNo] = useState(0);
   const mutation = useMutationHooks((data) => ChapterService.createChapter(data));
   const { data, isLoading } = mutation;
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+    ],
+    editorProps: {
+      attributes: {
+        class: 'border px-4 py-2 rounded-lg min-h-[200px]',
+      },
+    },
+    onUpdate({ editor }) {
+      setContent(editor.getHTML());
+  },
+    content: '<p>Nội dung truyện! 🌎️</p>',
+  })
+
 
   const notify = () =>
   toast.error(data?.message, {
@@ -52,8 +71,13 @@ const notifySuccess = () =>
       setContent("")
     }
   }, [data]);
+
+
   return (
     <div>
+            <Head>
+        <title>Thêm chương truyện</title>
+      </Head>
       {isLoading && <LoadingCustom tip="Đang thêm!" />}
       <h1 className="text-[20px] mb-6">Thêm chương truyện</h1>
       <div className="flex flex-col gap-4 bg-white dark:bg-[#283046] p-6 rounded-lg">
@@ -61,24 +85,9 @@ const notifySuccess = () =>
           <h1 className="text-[12px]  text-black mb-1 dark:text-white">
             Nội dung
           </h1>
-          <ReactQuill
-            className="text-black dark:text-white"
-            theme="snow"
-            value={content}
-            onChange={setContent}
-          />
+          <EditorContent  className="text-black dark:text-white" value={content} editor={editor} />
         </div>
         <Input title="Tên truyện" value={router.query.slug} disable />
-        <div>
-          <p className="title-input">Số chương</p>
-          <input
-            placeholder="Lớn hơn 0"
-            type="number"
-            className="input"
-            value={chapterNo}
-            onChange={(e) => setChapterNo(e.target.value)}
-          />
-        </div>
         <div>
           <p className="title-input">Tên chương</p>
           <input
@@ -95,7 +104,7 @@ const notifySuccess = () =>
               title: title,
               storyId: id,
               content: content,
-              chapterNo: chapterNo,
+              chapterNo: 1,
             })
           }
           className="bg-[#7367F0] text-[13px] text-[white] rounded-lg transition-all duration-300 hover:brightness-125 py-2"

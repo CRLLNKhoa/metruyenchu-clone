@@ -26,7 +26,7 @@ export const getChapterList = async (data) => {
 
 export const getChapter = async (data) => {
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/chapter/get/${data}`
+      `${process.env.NEXT_PUBLIC_API_URL}/chapter/get-edit/${data}`
     );
     return res.data;
   };

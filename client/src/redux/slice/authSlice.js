@@ -59,8 +59,8 @@ export const authSlice = createSlice({
       state.birthyear = birthyear;
       state.role = role;
       state.vip = vip;
-      state.candy.quantity = asset.candy.quantity
-      state.flower.quantity = asset.flower.quantity
+      state.candy.quantity = asset?.candy?.quantity
+      state.flower.quantity = asset?.flower?.quantity
     },
     payment: (state,action)=>{
       const {candy} = action.payload;

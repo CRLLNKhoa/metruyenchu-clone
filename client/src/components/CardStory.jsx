@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { FaUserEdit } from "react-icons/fa";
+import parser from "html-react-parser"
 
 export default function CardStory({type="default",img,title,rate=0,desc="",author="",genre="",id,num}) {
   const f = (num) => {
@@ -31,7 +32,7 @@ export default function CardStory({type="default",img,title,rate=0,desc="",autho
           <p className="text-[13px] text-green-600">{num} đánh giá</p>
         </div>}
         <p className="whitespace-pre-wrap text-[13px]">
-          {desc.slice(0,60)}...
+          {parser(desc.slice(0,75)+"...")}
         </p>
         <div className="flex justify-between gap-4 w-full">
           <div className="flex flex-nowrap text-[13px] justify-start overflow-hidden flex-1 items-center gap-2">

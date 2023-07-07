@@ -72,7 +72,7 @@ export default function TopList({ title = "Title",data=[],type }) {
         {renderType()}
         <div>
           <p className="flex items-center gap-1 text-[12px]">
-            <FaUserEdit /> {data?.userId.displayName}
+            <FaUserEdit /> {data?.userId?.displayName}
           </p>
         </div>
         <p className="flex items-center text-[12px] gap-1">
@@ -80,8 +80,8 @@ export default function TopList({ title = "Title",data=[],type }) {
         </p>
       </div>
       <div className="flex w-[100px] perspective-9">
-        <img className="translate-z-50 translate-x-[9px] -rotate-y-40" width={85} height={112} src={data.thumbnail} alt="?" />
-        <div className="w-12 h-[114px] bg-[#efefef] -translate-z-50 -translate-x-[1px] rotate-y-40 shadow-[inset_0_0_5px_#333]"></div>
+        <img className="translate-z-50 translate-x-[9px] -rotate-y-40 min-h-[114px] max-h-[114px]" width={85} src={data.thumbnail} alt="?" />
+        <div className="w-4 h-[114px] bg-[#efefef] -translate-z-50 -translate-x-[1px] rotate-y-40 shadow-[inset_0_0_5px_#333]"></div>
       </div>
     </div>
   );

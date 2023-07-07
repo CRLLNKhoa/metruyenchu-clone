@@ -92,7 +92,7 @@ export default function NewUp() {
           <div className="flex w-full items-center justify-between mt-4">
             <span className="flex items-center gap-2 text-[13px]">
               <FaUserEdit />
-              {data[indx]?.userId.displayName}
+              {data[indx]?.userId?.displayName}
             </span>
             <span className="text-[12px] border text-[#B78A28] px-2 border-[#B78A28]">
               {data[indx]?.genre}

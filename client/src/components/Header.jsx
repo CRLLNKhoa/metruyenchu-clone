@@ -675,12 +675,12 @@ export default function Header() {
             <div className="flex gap-8">
               <span
                 onClick={handlerR}
-                className="cursor-pointer text-white hover:text-[#835443]"
+                className="cursor-pointer text-black hover:text-[#835443]"
               >
                 Đăng ký
               </span>
               <span
-                className="cursor-pointer text-white hover:text-[#835443]"
+                className="cursor-pointer text-black hover:text-[#835443]"
                 onClick={handler}
               >
                 Đăng nhập

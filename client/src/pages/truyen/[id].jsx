@@ -27,6 +27,7 @@ import Skeleton from "react-loading-skeleton";
 import RateTab from "components/StoryDetail/RateTab";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import parser from  "html-react-parser"
 
 export async function getServerSideProps(context) {
   const id = context.query.id;
@@ -344,7 +345,7 @@ export default function Story({ id }) {
             <Tab.Panel>
               <div className="grid grid-cols-3 gap-4 py-4">
                 <div className="col-span-2 flex gap-12 flex-col">
-                  <p className="text-[13px]">{data?.description}</p>
+                  <p className="text-[15px]">{parser(data?.description || "")}</p>
                   <div className="text-[14px]">
                     <div className="flex items-center gap-16 border-b border-t py-4">
                       <h1 className="font-semibold w-[20%]">Cảm xúc</h1>
@@ -425,12 +426,12 @@ export default function Story({ id }) {
                 </div>
                 <div className="bg-[#F7F5F0] w-full p-4 flex flex-col justify-center items-center gap-2">
                   <img
-                    src={data?.userId.avatar}
+                    src={data?.userId?.avatar}
                     alt=""
                     className="rounded-full w-[64px] h-[64px]"
                   />
                   <h1 className="text-[13px] font-semibold mb-4">
-                    {data?.userId.displayName}
+                    {data?.userId?.displayName}
                   </h1>
                   <div className="flex justify-between gap-8">
                     <div className="flex flex-col items-center">

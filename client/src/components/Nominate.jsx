@@ -33,7 +33,7 @@ export default function Nominate() {
               img={item.thumbnail}
               desc={item.description}
               genre={item.genre}
-              author={item.userId.displayName}
+              author={item?.userId?.displayName}
             />
           ))}
         </div>

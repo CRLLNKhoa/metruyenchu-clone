@@ -32,7 +32,7 @@ export default function NewComplete() {
             img={item.thumbnail}
             desc={item.description}
             genre={item.genre}
-            author={item.userId.displayName}
+            author={item?.userId?.displayName}
           />
         ))}
         {isLoading && (

@@ -13,6 +13,8 @@ export default function NewUpdate() {
   };
   const query = useQuery({ queryKey: ["chapterN"], queryFn: fetch });
   const { isLoading, data, refetch } = query;
+
+  console.log(data)
   return (
     <div className="group">
       <div className="flex w-full justify-between border-b">

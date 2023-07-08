@@ -4,6 +4,7 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 const PaymentHistory = require("../models/paymentHistory");
 const EmailService = require("../services/emailService");
 const Story = require("../models/storyModel");
+const Chapter = require("../models/chapterModel")
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
@@ -412,6 +413,39 @@ const upVip = (id) => {
   });
 };
 
+const getDashboard = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({
+        _id: id,
+      });
+      const checkChapter = await Chapter.find({
+        storyId: checkUser.storyWritten
+      })
+      if (checkUser === null) {
+        resolve({
+          status: "ERR",
+          message: "The user is not define!",
+        });
+      }
+      resolve({
+        status: "OK",
+        message: "Lấy thông tin thành công!",
+        data: {
+          countStory: checkUser.storyWritten.length,
+          countChapter: checkChapter.length,
+          totalView: checkChapter.reduce(
+            (accumulator, currentValue) => accumulator + currentValue.view,
+            0
+          )
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -425,5 +459,6 @@ module.exports = {
   favoriteStory,
   unfavoriteStory,
   payment,
-  upVip
+  upVip,
+  getDashboard
 };

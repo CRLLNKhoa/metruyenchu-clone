@@ -301,6 +301,25 @@ const upVip = async (req, res) => {
     }
 }
 
+const getDashboard = async (req, res) => {
+    try{
+        const userId = req.params.id
+        if(!userId){
+            return res.status(200).json({
+                status: "ERR",
+                message: "Người dùng không tồn tại!"
+            })
+        }
+        const response = await UserService.getDashboard(userId)
+        return res.status(200).json(response)
+    }
+    catch(e){
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
@@ -316,5 +335,6 @@ module.exports = {
     favoriteStory,
     unfavoriteStory,
     payment,
-    upVip
+    upVip,
+    getDashboard
 }

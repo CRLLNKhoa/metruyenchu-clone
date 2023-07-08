@@ -109,7 +109,7 @@ const getAllByStory = (limit = 10, page = 0, sort, id) => {
       })
         .limit(limit)
         .skip(page * limit)
-        .sort({ name: "asc" });
+        .sort({ chapterNo: "asc" });
       resolve({
         status: "OK",
         message: "Lấy danh sách tập truyện thành công!",

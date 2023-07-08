@@ -1,7 +1,6 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controllers/userController")
-const { authMiddleWare,authUserMiddleWare } = require("../middleware/authMiddleWare")
 
 router.post("/sign-up", userController.createUser)
 router.post("/sign-in", userController.loginUser)
@@ -18,5 +17,6 @@ router.post("/refresh-token" ,userController.refreshToken)
 router.put("/read/:id" ,userController.readStory)
 router.put("/favorite/:id" ,userController.favoriteStory)
 router.put("/unfavorite/:id" ,userController.unfavoriteStory)
+router.get("/dashboard/:id" ,userController.getDashboard)
 
 module.exports = router

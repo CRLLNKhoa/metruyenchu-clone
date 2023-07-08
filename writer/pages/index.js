@@ -14,7 +14,7 @@ export default function Home() {
 
       <div className="flex flex-col gap-8 pb-8">
         <main className="w-full bg-white dark:bg-black dark:text-white p-4 rounded-s-lg">
-          <h1 className="font-bold">Chào mừng đến với vTruyen Creator</h1>
+          <h1 className="font-bold text-[24px]">Chào mừng đến với vTruyen Creator</h1>
           <div className="flex flex-col mt-4 gap-4">
             <p>
               - vCreator là nền tảng xuất bản dành cho các tác giả của
@@ -30,7 +30,7 @@ export default function Home() {
           </div>
         </main>
         <main className="w-full bg-white p-4 dark:bg-black dark:text-white rounded-s-lg">
-          <h1 className="font-bold">Tin tức mới</h1>
+          <h1 className="font-bold text-[24px]">Tin tức mới</h1>
           <div className="flex flex-col mt-4 gap-4">
             {data.map((item, index) => (
               <div
@@ -38,9 +38,9 @@ export default function Home() {
                 className="flex group items-center cursor-pointer w-full gap-8"
               >
                 <p>{index + 1}.</p>
-                <h3 className="">
+                <p className="">
                   {item.title}
-                </h3>
+                </p>
                 <i className="text-[10px]">{item.time}</i>
               </div>
             ))}

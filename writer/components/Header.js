@@ -14,7 +14,6 @@ function Header() {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch()
 
-
   useEffect(() => {
     // setIsLoading(true);
     const { storageData, decoded } = handleDecoded();
@@ -66,7 +65,7 @@ function Header() {
   return (
     <div className="bg-white dark:bg-black dark:text-white p-4 rounded-es-lg z-50 flex justify-between">
       <div className="text-sm breadcrumbs">
-        <ul>
+        <ul className="m-0">
           <li>
             <a>
               <svg
@@ -111,19 +110,19 @@ function Header() {
           </label>
           <ul
             tabIndex={20}
-            className="dropdown-content z-50 menu p-2 shadow-lg bg-base-100 dark:bg-black dark:text-white rounded-box w-52"
+            className="dropdown-content m-0 z-50 menu shadow-lg bg-base-100 dark:bg-black dark:text-white rounded-box w-52"
           >
             <li>
-              <a className="hover:text-primary duration-500">Thông tin</a>
+              <p className="hover:text-primary duration-500">Thông tin</p>
             </li>
             <li>
-              <a className="hover:text-primary duration-500">Cài đặt</a>
+              <p className="hover:text-primary duration-500">Cài đặt</p>
             </li>
-            <li onClick={()=>router.push("/register")}>
-              <a className="hover:text-primary duration-500">Doanh thu</a>
+            <li onClick={()=>router.push("/thong-ke")}>
+              <p className="hover:text-primary duration-500">Doanh thu</p>
             </li>
             <li onClick={handleLogout}>
-              <a className="hover:text-primary duration-500">Đăng xuất</a>
+              <p className="hover:text-primary duration-500">Đăng xuất</p>
             </li>
           </ul>
         </div>

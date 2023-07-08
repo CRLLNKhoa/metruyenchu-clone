@@ -29,12 +29,11 @@ function CreateStory() {
     editorProps: {
       attributes: {
         class:
-          "border border-[#570DF8] outline-[#570DF8] h-[200px] text-[14px] rounded-lg px-4 py-1 mx-auto focus:outline-none",
+          "border border-[#570DF8] outline-[#570DF8] min-h-[200px] text-[14px] rounded-lg px-4 py-1 mx-auto focus:outline-none",
       },
     },
     onUpdate: () => setStory({...story, description: editor.getHTML()})
   });
-console.log(story)
   const mutation  = useMutationHooks(data => addStory(data))
   const {data,isLoading} = mutation
 
@@ -64,7 +63,7 @@ console.log(story)
       />
 
       <main className="w-full bg-white dark:bg-black dark:text-white p-4 rounded-s-lg flex flex-col pb-8">
-        <h1 className="font-semibold">Thêm truyện mới</h1>
+        <h1 className="font-semibold text-[24px]">Thêm truyện mới</h1>
         <p className="text-[14px]">Bắt đầu sáng tạo thế giới của riêng bạn</p>
         <div className="flex flex-col mt-8 gap-4">
           {/* NOTE Tên truyện */}

@@ -22,7 +22,7 @@ function LeftBar() {
 
   return (
     <div className="shadow-lg w-full dark:bg-black dark:text-white h-screen overflow-y-scroll scrollbar-none justify-between flex flex-col">
-      <div className="h-16 pl-6 flex items-center">
+      <div className="h-16 pl-6 pt-4 flex items-center">
         <img className="w-10" src="/svg/logo.svg" alt="logo.png" />
       </div>
       <div className="py-12">
@@ -75,7 +75,7 @@ function LeftBar() {
         {auth.id && (
           <div className="">
             <Link
-              href="/"
+              href="/thong-ke"
               className="px-8 flex items-center gap-2 text-gray-400 hover:bg-gray-200 hover:text-black duration-500 py-2"
             >
               <TbReportAnalytics size={20} />
@@ -87,7 +87,7 @@ function LeftBar() {
               className="px-8 flex items-center gap-2 text-gray-400 hover:bg-gray-200 hover:text-black duration-500 py-2"
             >
               <BiErrorAlt size={20} />
-              Báo lỗi
+              Báo lỗi <i className="text-[10px]">(comming soon)</i>
             </Link>
           </div>
         )}
@@ -101,7 +101,7 @@ function LeftBar() {
             }}
             className={`w-1/2 cursor-pointer flex ${
               themeBtn && "bg-gray-200 font-semibold"
-            } p-2 rounded-full items-center justify-center gap-2`}
+            } p-2 rounded-full items-center justify-center dark:text-white dark:bg-black gap-2`}
           >
             <CiLight size={22} />
             <p>Light</p>

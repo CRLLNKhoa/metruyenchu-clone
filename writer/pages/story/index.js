@@ -5,6 +5,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutationHooks } from "@/hooks/useMutationHook";
 import { success,error } from "@/components/Message";
+import StoryCard from "@/components/StoryCard";
+import MyHead from "@/components/MyHead";
+import { Loading } from "@nextui-org/react";
 
 function Storys() {
   const router = useRouter();
@@ -21,8 +24,6 @@ function Storys() {
 
   const query = useQuery({ queryKey: ["story"], queryFn: fetchStory });
   const { isLoading, data,refetch } = query;
-
-
 
   const delMutation = useMutationHooks((id) => delStory(id))
   const {data: dataDel} = delMutation
@@ -42,57 +43,21 @@ function Storys() {
 
   return (
     <>
+       <MyHead
+        title="Danh sách truyện"
+        description="Welcome to TypeFinance, where we help you to choose the best financing for you"
+        image="/svg/logo.svg"
+        url="https://typefinance.com"
+      />
       <main className="w-full bg-white dark:bg-black dark:text-white p-4 rounded-s-lg flex flex-col pb-8">
-        <h1 className="font-semibold">Danh sách truyện</h1>
+        <h1 className="font-semibold text-[24px] m-0">Danh sách truyện</h1>
         <p className="text-[13px]">Danh sách các truyện bạn đã đăng</p>
-        <div className="grid grid-cols-3 gap-4 mt-8">
+        {isLoading ? <Loading /> :<div className="grid grid-cols-3 gap-4 mt-8">
           {/* NOTE List Story */}
           {data?.map((item) => (
-            <div key={item._id} className="border min-h-[120px] rounded-lg p-2 shadow-sm flex flex-col">
-              <h1 className="font-semibold text-[15px]">{item.title}</h1>
-              <span className="text-[13px] flex gap-2">
-                Trạng thái:{" "}
-                {item.published ? (
-                  <p className="font-normal text-green-600">đã xuất bản</p>
-                ) : (
-                  <p className="font-normal text-orange-600">chưa xuất bản</p>
-                )}
-              </span>
-              <div className="flex mt-auto gap-2 w-full flex-wrap">
-                <button
-                  onClick={() => router.push({
-                    pathname: "/chapter/create",
-                    query: { id: item._id,title: item.title },
-                  })}
-                  className="text-[9px] btn btn-primary btn-xs"
-                >
-                  Thêm chương
-                </button>
-                <button
-                  onClick={() => router.push(`/chapter/list`)}
-                  className="text-[9px] btn btn-info btn-xs"
-                >
-                  Ds.chương
-                </button>
-                <button
-                  onClick={() => router.push({
-                    pathname: "/story/edit",
-                    query: { id: item._id },
-                  })}
-                  className="text-[9px] btn btn-warning btn-xs"
-                >
-                  Chỉnh sửa
-                </button>
-                <button
-                  onClick={() => {setarlet(true);setDelId(item._id),setDelName(item.title)}}
-                  className="text-[9px] btn btn-error btn-xs"
-                >
-                  Xóa
-                </button>
-              </div>
-            </div>
+              <StoryCard key={item._id} data={item} action={{setDelId,setarlet,setDelName}} />
           ))}
-        </div>
+        </div>}
       </main>
 
       {/* NOTE Arlet */}

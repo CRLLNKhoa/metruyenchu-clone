@@ -525,7 +525,7 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-14 text-[14px]">
-          <a className="flex items-center gap-2 hover:text-[#835443]" href="/">
+          <a className="flex items-center gap-2 hover:text-[#835443]" target="_blank href="https://metruyenchu-tacgia.vercel.app/">
             <BsArrowUpCircle />
             Đăng truyện
           </a>

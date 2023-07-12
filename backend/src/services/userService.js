@@ -4,7 +4,8 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 const PaymentHistory = require("../models/paymentHistory");
 const EmailService = require("../services/emailService");
 const Story = require("../models/storyModel");
-const Chapter = require("../models/chapterModel")
+const Chapter = require("../models/chapterModel");
+const Rate = require("../models/rateModel");
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
@@ -82,7 +83,7 @@ const loginUser = (userLogin) => {
 };
 
 const updateUser = (id, data) => {
-  console.log(data)
+  console.log(data);
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
@@ -202,10 +203,7 @@ const readStory = (id, data) => {
           message: "The user is not define!",
         });
       }
-      const updateUser = await User.findByIdAndUpdate(
-        id,
-        { $addToSet: data }
-      );
+      const updateUser = await User.findByIdAndUpdate(id, { $addToSet: data });
       resolve({
         status: "OK",
         message: "Cập nhật thành công!",
@@ -217,7 +215,7 @@ const readStory = (id, data) => {
 };
 
 const favoriteStory = (id, data) => {
-  const {favoriteStories} = data
+  const { favoriteStories } = data;
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
@@ -231,12 +229,14 @@ const favoriteStory = (id, data) => {
       }
       const updateUser = await User.findByIdAndUpdate(
         id,
-        { $addToSet: data },{new: true}
+        { $addToSet: data },
+        { new: true }
       );
       const addFavorite = await Story.findByIdAndUpdate(
         favoriteStories,
-        {$addToSet: {liked: updateUser._id}},{new: true}
-      )
+        { $addToSet: { liked: updateUser._id } },
+        { new: true }
+      );
       resolve({
         status: "OK",
         message: "Cập nhật thành công!",
@@ -248,7 +248,7 @@ const favoriteStory = (id, data) => {
 };
 
 const unfavoriteStory = (id, data) => {
-  const {favoriteStories} = data
+  const { favoriteStories } = data;
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
@@ -262,16 +262,18 @@ const unfavoriteStory = (id, data) => {
       }
       const updateUser = await User.findByIdAndUpdate(
         id,
-        { $pull: data },{new: true}
+        { $pull: data },
+        { new: true }
       );
       const addFavorite = await Story.findByIdAndUpdate(
         favoriteStories,
-        {$pull: {liked: updateUser._id}},{new: true}
-      )
+        { $pull: { liked: updateUser._id } },
+        { new: true }
+      );
       resolve({
         status: "OK",
         message: "Cập nhật thành công!",
-        data: updateUser.favoriteStories
+        data: updateUser.favoriteStories,
       });
     } catch (e) {
       reject(e);
@@ -332,7 +334,7 @@ const getFavoriteStories = (id, data) => {
 };
 
 const payment = (id, data) => {
-  const {pack} = data
+  const { pack } = data;
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({
@@ -344,30 +346,40 @@ const payment = (id, data) => {
           message: "The user is not define!",
         });
       }
-      let amount = 50000
+      let amount = 50000;
       switch (pack) {
         case 2.49:
-          amount = 50000 
+          amount = 50000;
           break;
         case 4.98:
-          amount = 100000
+          amount = 100000;
           break;
-          case 9.94:
-            amount = 200000
-            break;
-            case 19.49:
-              amount = 500000
-              break;
+        case 9.94:
+          amount = 200000;
+          break;
+        case 19.49:
+          amount = 500000;
+          break;
         default:
           break;
       }
-      const updateUser = await User.findByIdAndUpdate(id, {$inc: {"asset.candy.quantity": amount}}, { new: true });
+      const updateUser = await User.findByIdAndUpdate(
+        id,
+        { $inc: { "asset.candy.quantity": amount } },
+        { new: true }
+      );
       const createdHis = await PaymentHistory.create({
         userId: id,
         pack: pack,
-        amount: amount
-      })
-      await EmailService.sendEmailPaymentComplete(pack,updateUser.email,createdHis._id,createdHis.createdAt,amount)
+        amount: amount,
+      });
+      await EmailService.sendEmailPaymentComplete(
+        pack,
+        updateUser.email,
+        createdHis._id,
+        createdHis.createdAt,
+        amount
+      );
       resolve({
         status: "OK",
         message: "Thanh toán thành công!",
@@ -397,14 +409,22 @@ const upVip = (id) => {
           message: "Bạn không đủ kẹo!",
         });
       }
-      const updateUser = await User.findByIdAndUpdate(id, {$inc: {"asset.candy.quantity": -300000}}, { new: true });
-      const change = await User.findByIdAndUpdate(id,{vip: {status: true}},{new: true})
+      const updateUser = await User.findByIdAndUpdate(
+        id,
+        { $inc: { "asset.candy.quantity": -300000 } },
+        { new: true }
+      );
+      const change = await User.findByIdAndUpdate(
+        id,
+        { vip: { status: true } },
+        { new: true }
+      );
       resolve({
         status: "OK",
         message: "Thanh toán thành công!",
         data: {
           asset: updateUser.asset,
-          vip: {status: true}
+          vip: { status: true },
         },
       });
     } catch (e) {
@@ -420,8 +440,8 @@ const getDashboard = (id) => {
         _id: id,
       });
       const checkChapter = await Chapter.find({
-        storyId: checkUser.storyWritten
-      })
+        storyId: checkUser.storyWritten,
+      });
       if (checkUser === null) {
         resolve({
           status: "ERR",
@@ -437,8 +457,59 @@ const getDashboard = (id) => {
           totalView: checkChapter.reduce(
             (accumulator, currentValue) => accumulator + currentValue.view,
             0
-          )
-        }
+          ),
+        },
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getDashboardAdmin = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const countUser = await User.count();
+      const countVip = await User.find({
+        "vip.status": true,
+      }).count();
+      const countUserBan = await User.find({
+        status: false,
+      }).count();
+      const countUserActive = await User.find({
+        status: true,
+      }).count();
+      const countStoryBan = await Story.find({
+        published: false,
+      }).count();
+      const countStoryActive = await Story.find({
+        published: true,
+      }).count();
+      const countStory = await Story.count();
+      const countChapter = await Chapter.count();
+      const chapters = await Chapter.find().select("view");
+      const countRate = await Rate.count();
+      const countView = chapters.reduce((acc, curr) => acc + curr.view, 0);
+      const countPayment = await PaymentHistory.count();
+      const payment = await PaymentHistory.find().select("amount");
+      const totalPayment = payment.reduce((acc, curr) => acc + curr.amount, 0);
+      resolve({
+        status: "OK",
+        message: "Lấy thông tin thành công!",
+        data: {
+          countUser,
+          countStory,
+          countChapter,
+          countRate,
+          countView,
+          countPayment,
+          totalPayment,
+          countVip,
+          countUserBan: countUserBan,
+          countUserActive: countUserActive,
+          countStoryBan,
+          countStoryActive,
+        },
       });
     } catch (e) {
       reject(e);
@@ -460,5 +531,6 @@ module.exports = {
   unfavoriteStory,
   payment,
   upVip,
-  getDashboard
+  getDashboard,
+  getDashboardAdmin,
 };

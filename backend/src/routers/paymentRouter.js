@@ -12,5 +12,6 @@ router.get("/config", (req,res)=>{
     })
 })
 router.get("/history/:id", hisPaymentController.getAll)
+router.get("/get", hisPaymentController.getAllAdmin)
 
 module.exports = router

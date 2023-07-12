@@ -185,11 +185,26 @@ const getByFilter = async (req, res) => {
   }
 };
 
+const getAllAdmin = async (req, res) => {
+  try {
+    const { limit, page } = req.query;
+    const response = await StoryService.getallAdmin(
+      Number(limit) || 10,
+      Number(page) || 0
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createStory,
   getAll,
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,getStorySortRating,getByRank,getByFilter
+  getAllAuthor,getStorySortRating,getByRank,getByFilter,getAllAdmin
 };

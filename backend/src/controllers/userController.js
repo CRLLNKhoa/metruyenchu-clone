@@ -320,6 +320,18 @@ const getDashboard = async (req, res) => {
     }
 }
 
+const getDashboardAdmin = async (req, res) => {
+    try{
+        const response = await UserService.getDashboardAdmin()
+        return res.status(200).json(response)
+    }
+    catch(e){
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
@@ -336,5 +348,6 @@ module.exports = {
     unfavoriteStory,
     payment,
     upVip,
-    getDashboard
+    getDashboard,
+    getDashboardAdmin
 }

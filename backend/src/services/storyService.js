@@ -60,7 +60,7 @@ const getall = (limit = 10, page = 0, sort) => {
       if (sort) {
         const objSort = {};
         objSort[sort[1]] = sort[0];
-        const allUserSort = await Story.find()
+        const allUserSort = await Story.find({published: true})
           .limit(limit)
           .skip(page * limit)
           .sort(objSort).populate("userId");
@@ -73,7 +73,7 @@ const getall = (limit = 10, page = 0, sort) => {
           totalPage: Math.ceil(totalUser / limit),
         });
       }
-      const allUser = await Story.find()
+      const allUser = await Story.find({published: true})
         .limit(limit)
         .skip(page * limit)
         .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
@@ -95,7 +95,7 @@ const getStorySortRating = (limit = 8, page = 0) => {
   return new Promise(async (resolve, reject) => {
     try {
       const total = await Story.count();
-      const all = await Story.find().populate("userId", "displayName").populate('rating',"worldScene content character").select("title thumbnail genre description");
+      const all = await Story.find({published: true}).populate("userId", "displayName").populate('rating',"worldScene content character").select("title thumbnail genre description");
       const arr = []
       const forEachLoop = _ => {
         all.forEach(item => {
@@ -252,7 +252,7 @@ const getByRank = (limit = 10, page = 0, sort) => {
       if (sort) {
         const objSort = {};
         objSort[sort] = "desc";
-        const allStorySort = await Story.find()
+        const allStorySort = await Story.find({published: true})
           .limit(limit)
           .skip(page * limit)
           .sort(objSort).populate("userId","displayName").populate("chapter","view");
@@ -301,7 +301,7 @@ const getByFilter = (limit = 10, page = 0, filter) => {
           totalPage: Math.ceil(allStorySort.length / limit),
         });
       }
-      const allStory = await Story.find()
+      const allStory = await Story.find({published: true})
         .limit(limit)
         .skip(page * limit)
         .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
@@ -319,11 +319,33 @@ const getByFilter = (limit = 10, page = 0, filter) => {
   });
 };
 
+const getallAdmin = (limit = 10, page = 0) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const totalUser = await Story.count();
+      const allUser = await Story.find()
+        .limit(limit)
+        .skip(page * limit)
+        .sort({ createdAt: "desc" }).populate('userId',"displayName").populate("chapter","view");
+      resolve({
+        status: "OK",
+        message: "Lấy danh sách truyện thành công!",
+        data: allUser,
+        totalStory: totalUser,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalUser / limit),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createStory,
   getall,
   getDetail,
   deleteStory,
   updateStory,
-  getAllAuthor,getStorySortRating,getByRank,getByFilter
+  getAllAuthor,getStorySortRating,getByRank,getByFilter,getallAdmin
 };

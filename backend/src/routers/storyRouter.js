@@ -11,5 +11,6 @@ router.post("/get-filter" ,storyController.getByFilter)
 router.get("/get-rating" ,storyController.getStorySortRating)
 router.get("/get-all-author/:id" ,storyController.getAllAuthor)
 router.get("/get-detail/:id" ,storyController.getDetail)
+router.get("/get-all-admin" ,storyController.getAllAdmin)
 
 module.exports = router

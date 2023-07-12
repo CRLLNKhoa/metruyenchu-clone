@@ -18,5 +18,6 @@ router.put("/read/:id" ,userController.readStory)
 router.put("/favorite/:id" ,userController.favoriteStory)
 router.put("/unfavorite/:id" ,userController.unfavoriteStory)
 router.get("/dashboard/:id" ,userController.getDashboard)
+router.get("/dashboardAdmin" ,userController.getDashboardAdmin)
 
 module.exports = router
